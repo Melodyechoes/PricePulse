@@ -1,0 +1,30 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      password: anbxyly
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  session:
+    store-type: redis
+    timeout: 1800s
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/price_pulse?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: anbxyly
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.pricepulse: debug
+    org.springframework.data.redis: debug

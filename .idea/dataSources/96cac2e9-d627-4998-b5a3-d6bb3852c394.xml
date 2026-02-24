@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="@localhost">
+  <database-model serializer="dbm" dbms="REDIS" family-id="REDIS" format-version="4.54">
+    <root id="1">
+      <ServerVersion>7.0.15</ServerVersion>
+    </root>
+    <schema id="2" parent="1" name="0">
+      <Current>1</Current>
+    </schema>
+    <schema id="3" parent="1" name="1"/>
+    <schema id="4" parent="1" name="10"/>
+    <schema id="5" parent="1" name="11"/>
+    <schema id="6" parent="1" name="12"/>
+    <schema id="7" parent="1" name="13"/>
+    <schema id="8" parent="1" name="14"/>
+    <schema id="9" parent="1" name="15"/>
+    <schema id="10" parent="1" name="2"/>
+    <schema id="11" parent="1" name="3"/>
+    <schema id="12" parent="1" name="4"/>
+    <schema id="13" parent="1" name="5"/>
+    <schema id="14" parent="1" name="6"/>
+    <schema id="15" parent="1" name="7"/>
+    <schema id="16" parent="1" name="8"/>
+    <schema id="17" parent="1" name="9"/>
+    <redis-key id="18" parent="2" name="article:article_1762410037693">
+      <Type>hash-table</Type>
+    </redis-key>
+    <redis-key id="19" parent="2" name="article:article_1762410037693tags:">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="20" parent="2" name="article:article_1762410037700">
+      <Type>hash-table</Type>
+    </redis-key>
+    <redis-key id="21" parent="2" name="article:article_1762410037700tags:">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="22" parent="2" name="article:article_1762410037701">
+      <Type>hash-table</Type>
+    </redis-key>
+    <redis-key id="23" parent="2" name="article:article_1762410037701tags:">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="24" parent="2" name="article:article_1762410170934">
+      <Type>hash-table</Type>
+    </redis-key>
+    <redis-key id="25" parent="2" name="article:article_1762410170934tags:">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="26" parent="2" name="article:article_1762410170941">
+      <Type>hash-table</Type>
+    </redis-key>
+    <redis-key id="27" parent="2" name="article:article_1762410170941tags:">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="28" parent="2" name="article:article_1762410353583">
+      <Type>hash-table</Type>
+    </redis-key>
+    <redis-key id="29" parent="2" name="article:article_1762410353583:tags">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="30" parent="2" name="article:article_1762410353589">
+      <Type>hash-table</Type>
+    </redis-key>
+    <redis-key id="31" parent="2" name="article:article_1762410353589:tags">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="32" parent="2" name="articles:popular">
+      <Type>sorted-set</Type>
+    </redis-key>
+    <redis-key id="33" parent="2" name="tag:database:articles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="34" parent="2" name="tag:databasearticles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="35" parent="2" name="tag:framework:articles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="36" parent="2" name="tag:frameworkarticles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="37" parent="2" name="tag:java:articles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="38" parent="2" name="tag:javaarticles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="39" parent="2" name="tag:nosql:articles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="40" parent="2" name="tag:nosqlarticles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="41" parent="2" name="tag:programming:articles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="42" parent="2" name="tag:programmingarticles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="43" parent="2" name="tag:redis:articles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="44" parent="2" name="tag:redisarticles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="45" parent="2" name="tag:spring:articles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="46" parent="2" name="tag:springarticles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="47" parent="2" name="tag:tutorial:articles">
+      <Type>set</Type>
+    </redis-key>
+    <redis-key id="48" parent="2" name="tag:tutorialarticles">
+      <Type>set</Type>
+    </redis-key>
+  </database-model>
+</dataSource>
