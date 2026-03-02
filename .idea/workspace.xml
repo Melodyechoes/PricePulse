@@ -5,26 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7d70965-c039-4b7b-a178-1d9e189b0af4" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/dto/ProductDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/PlatformEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/PriceHistory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/Product.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/UserProduct.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/ProductController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/ProductMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/ProductService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/ProductControllerIntegrationTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/ProductMapperTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/ProductServiceTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/QuickTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/UserProductController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/UserProductMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/UserProductService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/UserProductControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/UserProductMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/UserProductServiceTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/d26197b2-82c0-4745-97d6-0efa5cc90655.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/d26197b2-82c0-4745-97d6-0efa5cc90655.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2022b11034_朱露斌_软件工程_任务书.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/exception/GlobalExceptionHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/interceptor/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/interceptor/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/QuickTest.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +22,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="61" />
+    <option name="cachedIndexableFilesCount" value="65" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -76,6 +66,10 @@
     "JUnit.ProductMapperTest.executor": "Run",
     "JUnit.ProductServiceTest.executor": "Run",
     "JUnit.QuickTest.executor": "Run",
+    "JUnit.UserProductControllerTest.executor": "Run",
+    "JUnit.UserProductMapperTest (1).executor": "Run",
+    "JUnit.UserProductMapperTest.executor": "Run",
+    "JUnit.UserProductServiceTest.executor": "Run",
     "Maven.backend [clean].executor": "Run",
     "Maven.backend [compile].executor": "Run",
     "Maven.backend [package].executor": "Run",
@@ -120,8 +114,8 @@
       <recent name="E:\Code Study\Java\Project\price-pulse" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.ProductServiceTest">
-    <configuration name="ProductControllerIntegrationTest (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.SimpleUserProductTest">
+    <configuration name="SimpleUserProductTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
@@ -130,28 +124,28 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.pricepulse.backend" />
-      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.ProductControllerIntegrationTest" />
+      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.SimpleUserProductTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ProductControllerIntegrationTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="UserProductControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.pricepulse.backend.controller.*" />
+          <option name="PATTERN" value="com.pricepulse.backend.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.pricepulse.backend.controller" />
-      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.controller.ProductControllerIntegrationTest" />
+      <option name="PACKAGE_NAME" value="com.pricepulse.backend" />
+      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.UserProductControllerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ProductMapperTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="UserProductMapperTest (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
@@ -160,28 +154,13 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.pricepulse.backend.mapper" />
-      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.mapper.ProductMapperTest" />
+      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.mapper.UserProductMapperTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ProductServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="backend" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.pricepulse.backend.service.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.pricepulse.backend.service" />
-      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.service.ProductServiceTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="QuickTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="UserProductMapperTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
@@ -190,7 +169,22 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.pricepulse.backend" />
-      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.QuickTest" />
+      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.UserProductMapperTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserProductServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="backend" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.pricepulse.backend.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.pricepulse.backend" />
+      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.UserProductServiceTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -198,11 +192,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.ProductServiceTest" />
-        <item itemvalue="JUnit.ProductMapperTest" />
-        <item itemvalue="JUnit.ProductControllerIntegrationTest (1)" />
-        <item itemvalue="JUnit.ProductControllerIntegrationTest" />
-        <item itemvalue="JUnit.QuickTest" />
+        <item itemvalue="JUnit.SimpleUserProductTest" />
+        <item itemvalue="JUnit.UserProductServiceTest" />
+        <item itemvalue="JUnit.UserProductMapperTest" />
+        <item itemvalue="JUnit.UserProductMapperTest (1)" />
+        <item itemvalue="JUnit.UserProductControllerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -239,6 +233,8 @@
       <workItem from="1772253453466" duration="609000" />
       <workItem from="1772254101549" duration="4820000" />
       <workItem from="1772334847508" duration="1953000" />
+      <workItem from="1772336825739" duration="388000" />
+      <workItem from="1772427547835" duration="1092000" />
     </task>
     <servers />
   </component>

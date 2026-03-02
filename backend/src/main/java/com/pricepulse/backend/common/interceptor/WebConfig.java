@@ -18,10 +18,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/api/login/**",
                         "/api/register/**",
-                        "/api/products/**",  // 排除商品API
+                        "/api/products/**",      // 已排除商品API
+                        "/api/user-products/**", // 新增：排除用户关注API
                         "/error",
                         "/static/**",
                         "/webjars/**"
                 );
     }
+
 }
