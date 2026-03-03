@@ -1,8 +1,7 @@
-package com.pricepulse.backend;
+package com.pricepulse.backend.mapper;
 
 import com.pricepulse.backend.common.entity.PlatformEnum;
 import com.pricepulse.backend.common.entity.Product;
-import com.pricepulse.backend.mapper.ProductMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

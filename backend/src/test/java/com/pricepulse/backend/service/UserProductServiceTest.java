@@ -1,7 +1,6 @@
-package com.pricepulse.backend;
+package com.pricepulse.backend.service;
 
 import com.pricepulse.backend.common.entity.UserProduct;
-import com.pricepulse.backend.service.UserProductService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

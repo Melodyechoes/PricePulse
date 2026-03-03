@@ -1,9 +1,8 @@
-package com.pricepulse.backend;
+package com.pricepulse.backend.service;
 
 import com.pricepulse.backend.common.entity.PlatformEnum;
 import com.pricepulse.backend.common.entity.Product;
 import com.pricepulse.backend.common.exception.BusinessException;
-import com.pricepulse.backend.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

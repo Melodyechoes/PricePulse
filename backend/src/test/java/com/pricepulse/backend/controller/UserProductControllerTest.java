@@ -1,4 +1,4 @@
-package com.pricepulse.backend;
+package com.pricepulse.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pricepulse.backend.common.entity.UserProduct;
