@@ -30,7 +30,7 @@ public class ProductService {
         // 检查是否已存在相同商品
         if (StringUtils.hasText(product.getPlatformId())) {
             Product existingProduct = productMapper.selectByPlatformId(
-                    product.getPlatformId(), product.getPlatform().name());
+                    product.getPlatformId(), product.getPlatform());
             if (existingProduct != null) {
                 throw new BusinessException("该商品已存在");
             }
@@ -53,6 +53,7 @@ public class ProductService {
         log.info("商品添加成功，ID: {}", product.getId());
         return product;
     }
+
 
     /**
      * 根据ID查询商品
@@ -164,6 +165,7 @@ public class ProductService {
         return productMapper.selectByPriceRange(minPrice, maxPrice);
     }
 
+
     /**
      * 验证商品参数
      */
@@ -174,14 +176,24 @@ public class ProductService {
         if (!StringUtils.hasText(product.getUrl())) {
             throw new BusinessException("商品链接不能为空");
         }
-        if (product.getPlatform() == null) {
+        if (!StringUtils.hasText(product.getPlatform())) {
             throw new BusinessException("商品平台不能为空");
         }
         if (product.getCurrentPrice() == null) {
             throw new BusinessException("商品价格不能为空");
         }
         if (product.getCurrentPrice().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BusinessException("商品价格必须大于0");
+            throw new BusinessException("商品价格必须大于 0");
         }
     }
+    /**
+     * 根据关键词搜索商品
+     */
+    public List<Product> searchByKeyword(String keyword) {
+        if (!StringUtils.hasText(keyword)) {
+            throw new BusinessException("搜索关键词不能为空");
+        }
+        return productMapper.searchByKeyword(keyword);
+    }
+
 }

@@ -5,23 +5,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7d70965-c039-4b7b-a178-1d9e189b0af4" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/dto/LoginRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/dto/RegisterRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/dto/UserInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/interceptor/JwtInterceptor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/util/JwtUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/AuthController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/QuickAuthTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/common/util/JwtUtilTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/controller/AuthControllerTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/AuthServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/api/auth.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/api/products.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/AddProductDialog.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/PriceHistoryChart.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/router/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/stores/products.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/stores/user.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/utils/request.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/Home.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/Login.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/ProductDetail.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/Products.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/Register.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/d26197b2-82c0-4745-97d6-0efa5cc90655.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/d26197b2-82c0-4745-97d6-0efa5cc90655.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/dto/RegisterDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/dto/RegisterDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/interceptor/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/interceptor/WebConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/Product.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/ProductController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/ProductMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/ProductMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/ProductService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/sql/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/sql/init.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/controller/ProductControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/controller/ProductControllerIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/mapper/ProductMapperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/mapper/ProductMapperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/NotificationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/NotificationServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/PriceCheckServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/PriceCheckServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/ProductServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/ProductServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/assets/logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/HelloWorld.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/vue.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vue.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +45,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="76" />
+    <option name="cachedIndexableFilesCount" value="93" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -112,11 +128,12 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "项目",
+    "project.structure.last.edited": "模块",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "MavenSettings",
     "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "E:\\Code Study\\Java\\idea\\IntelliJ IDEA 2025.3.2\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -136,7 +153,7 @@
       <recent name="com.pricepulse.backend.service" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.AuthControllerTest">
+  <component name="RunManager" selected="Spring Boot.BackendApplication">
     <configuration name="AuthControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
@@ -267,7 +284,9 @@
       <workItem from="1772427547835" duration="2313000" />
       <workItem from="1772514596938" duration="122000" />
       <workItem from="1772514739584" duration="912000" />
-      <workItem from="1772515844116" duration="2538000" />
+      <workItem from="1772515844116" duration="2663000" />
+      <workItem from="1772527432343" duration="678000" />
+      <workItem from="1772602117954" duration="11531000" />
     </task>
     <servers />
   </component>
@@ -289,6 +308,17 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/frontend/src/components/AddProductDialog.vue</url>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

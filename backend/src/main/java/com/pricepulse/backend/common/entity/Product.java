@@ -10,7 +10,7 @@ public class Product {
     private String name;
     private String url;
     private String imageUrl;
-    private PlatformEnum platform;
+    private String platform;
     private String platformId;
     private String brand;
     private String category;
@@ -21,6 +21,7 @@ public class Product {
     private BigDecimal rating;
     private Integer reviewCount;
     private Integer stockStatus;
+    private String description;
     private LocalDateTime lastChecked;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

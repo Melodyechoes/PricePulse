@@ -1047,7 +1047,7 @@ product_id</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="320" parent="302" name="id">
-      <AutoIncrement>3</AutoIncrement>
+      <AutoIncrement>24</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
@@ -1136,199 +1136,204 @@ product_id</ColNames>
       <Position>19</Position>
       <StoredType>tinyint|0s</StoredType>
     </column>
-    <index id="339" parent="302" name="PRIMARY">
+    <column id="339" parent="302" name="description">
+      <Comment>商品描述</Comment>
+      <Position>20</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <index id="340" parent="302" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="340" parent="302" name="idx_products_platform">
+    <index id="341" parent="302" name="idx_products_platform">
       <ColNames>platform</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="341" parent="302" name="idx_products_brand">
+    <index id="342" parent="302" name="idx_products_brand">
       <ColNames>brand</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="342" parent="302" name="idx_products_category">
+    <index id="343" parent="302" name="idx_products_category">
       <ColNames>category</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="343" parent="302" name="idx_products_price">
+    <index id="344" parent="302" name="idx_products_price">
       <ColNames>current_price</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="344" parent="302" name="PRIMARY">
+    <key id="345" parent="302" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="345" parent="303" name="id">
+    <column id="346" parent="303" name="id">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="346" parent="303" name="username">
+    <column id="347" parent="303" name="username">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <column id="347" parent="303" name="password">
+    <column id="348" parent="303" name="password">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>varchar(100)|0s</StoredType>
     </column>
-    <index id="348" parent="303" name="PRIMARY">
+    <index id="349" parent="303" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="349" parent="303" name="username">
+    <index id="350" parent="303" name="username">
       <ColNames>username</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="350" parent="303" name="PRIMARY">
+    <key id="351" parent="303" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="351" parent="303" name="username">
+    <key id="352" parent="303" name="username">
       <UnderlyingIndexName>username</UnderlyingIndexName>
     </key>
-    <column id="352" parent="304" name="id">
+    <column id="353" parent="304" name="id">
       <AutoIncrement>3</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="353" parent="304" name="user_id">
+    <column id="354" parent="304" name="user_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="354" parent="304" name="product_id">
+    <column id="355" parent="304" name="product_id">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="355" parent="304" name="target_price">
+    <column id="356" parent="304" name="target_price">
       <Position>4</Position>
       <StoredType>decimal(10,2 digit)|0s</StoredType>
     </column>
-    <column id="356" parent="304" name="notification_enabled">
+    <column id="357" parent="304" name="notification_enabled">
       <DefaultExpression>1</DefaultExpression>
       <Position>5</Position>
       <StoredType>tinyint|0s</StoredType>
     </column>
-    <column id="357" parent="304" name="price_drop_threshold">
+    <column id="358" parent="304" name="price_drop_threshold">
       <DefaultExpression>5.00</DefaultExpression>
       <Position>6</Position>
       <StoredType>decimal(5,2 digit)|0s</StoredType>
     </column>
-    <column id="358" parent="304" name="created_at">
+    <column id="359" parent="304" name="created_at">
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <Position>7</Position>
       <StoredType>timestamp|0s</StoredType>
     </column>
-    <column id="359" parent="304" name="updated_at">
+    <column id="360" parent="304" name="updated_at">
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
       <Position>8</Position>
       <StoredType>timestamp|0s</StoredType>
     </column>
-    <foreign-key id="360" parent="304" name="user_products_ibfk_1">
+    <foreign-key id="361" parent="304" name="user_products_ibfk_1">
       <ColNames>user_id</ColNames>
       <OnDelete>cascade</OnDelete>
       <RefColNames>id</RefColNames>
       <RefTableName>users</RefTableName>
     </foreign-key>
-    <foreign-key id="361" parent="304" name="user_products_ibfk_2">
+    <foreign-key id="362" parent="304" name="user_products_ibfk_2">
       <ColNames>product_id</ColNames>
       <OnDelete>cascade</OnDelete>
       <RefColNames>id</RefColNames>
       <RefTableName>products</RefTableName>
     </foreign-key>
-    <index id="362" parent="304" name="PRIMARY">
+    <index id="363" parent="304" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="363" parent="304" name="uk_user_product">
+    <index id="364" parent="304" name="uk_user_product">
       <ColNames>user_id
 product_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="364" parent="304" name="idx_user_id">
+    <index id="365" parent="304" name="idx_user_id">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="365" parent="304" name="idx_product_id">
+    <index id="366" parent="304" name="idx_product_id">
       <ColNames>product_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="366" parent="304" name="idx_user_products_notification">
+    <index id="367" parent="304" name="idx_user_products_notification">
       <ColNames>notification_enabled
 user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="367" parent="304" name="PRIMARY">
+    <key id="368" parent="304" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="368" parent="304" name="uk_user_product">
+    <key id="369" parent="304" name="uk_user_product">
       <UnderlyingIndexName>uk_user_product</UnderlyingIndexName>
     </key>
-    <column id="369" parent="305" name="id">
+    <column id="370" parent="305" name="id">
       <AutoIncrement>3</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="370" parent="305" name="username">
+    <column id="371" parent="305" name="username">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <column id="371" parent="305" name="password">
+    <column id="372" parent="305" name="password">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="372" parent="305" name="created_at">
+    <column id="373" parent="305" name="created_at">
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <Position>4</Position>
       <StoredType>timestamp|0s</StoredType>
     </column>
-    <column id="373" parent="305" name="updated_at">
+    <column id="374" parent="305" name="updated_at">
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
       <Position>5</Position>
       <StoredType>timestamp|0s</StoredType>
     </column>
-    <column id="374" parent="305" name="status">
+    <column id="375" parent="305" name="status">
       <DefaultExpression>1</DefaultExpression>
       <Position>6</Position>
       <StoredType>tinyint|0s</StoredType>
     </column>
-    <index id="375" parent="305" name="PRIMARY">
+    <index id="376" parent="305" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="376" parent="305" name="username">
+    <index id="377" parent="305" name="username">
       <ColNames>username</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="377" parent="305" name="PRIMARY">
+    <key id="378" parent="305" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="378" parent="305" name="username">
+    <key id="379" parent="305" name="username">
       <UnderlyingIndexName>username</UnderlyingIndexName>
     </key>
   </database-model>

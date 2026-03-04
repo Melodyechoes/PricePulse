@@ -49,7 +49,7 @@ class PriceCheckServiceTest {
         Product product = new Product();
         product.setName("测试商品");
         product.setUrl("https://detail.tmall.com/item.htm?id=123456789");
-        product.setPlatform(com.pricepulse.backend.common.entity.PlatformEnum.TMALL);
+        product.setPlatform("tmall");
         product.setCurrentPrice(new BigDecimal("9999.00"));
         product.setStatus(1);
         return product;

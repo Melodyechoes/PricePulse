@@ -96,7 +96,7 @@ class ProductControllerIntegrationTest {
         Product product = new Product();
         product.setName("集成测试商品");
         product.setUrl("https://test.com/integration");
-        product.setPlatform(PlatformEnum.TAOBAO);
+        product.setPlatform("taobao");
         product.setCurrentPrice(new BigDecimal("299.99"));
         product.setBrand("集成测试品牌");
         product.setCategory("电子产品");

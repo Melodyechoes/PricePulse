@@ -9,6 +9,7 @@ import java.util.List;
 @Mapper
 public interface ProductMapper {
 
+
     /**
      * 插入商品
      */
@@ -20,7 +21,7 @@ public interface ProductMapper {
     int insert(Product product);
 
     /**
-     * 根据ID查询商品
+     * 根据 ID 查询商品
      */
     @Select("SELECT * FROM products WHERE id = #{id}")
     @Results({
@@ -74,7 +75,7 @@ public interface ProductMapper {
     List<Product> selectAll();
 
     /**
-     * 根据平台ID查询商品（用于去重）
+     * 根据平台 ID 查询商品
      */
     @Select("SELECT * FROM products WHERE platform_id = #{platformId} AND platform = #{platform}")
     @Results({
@@ -83,7 +84,7 @@ public interface ProductMapper {
             @Result(property = "url", column = "url"),
             @Result(property = "imageUrl", column = "image_url"),
             @Result(property = "platform", column = "platform"),
-            @Result(property = "platformId", column = "platform_id"),  // 确保这个映射正确
+            @Result(property = "platformId", column = "platform_id"),
             @Result(property = "brand", column = "brand"),
             @Result(property = "category", column = "category"),
             @Result(property = "currentPrice", column = "current_price"),
@@ -121,12 +122,54 @@ public interface ProductMapper {
      * 根据分类查询商品
      */
     @Select("SELECT * FROM products WHERE category = #{category} AND status = 1 ORDER BY created_at DESC")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "url", column = "url"),
+            @Result(property = "imageUrl", column = "image_url"),
+            @Result(property = "platform", column = "platform"),
+            @Result(property = "platformId", column = "platform_id"),
+            @Result(property = "brand", column = "brand"),
+            @Result(property = "category", column = "category"),
+            @Result(property = "currentPrice", column = "current_price"),
+            @Result(property = "originalPrice", column = "original_price"),
+            @Result(property = "discountRate", column = "discount_rate"),
+            @Result(property = "salesCount", column = "sales_count"),
+            @Result(property = "rating", column = "rating"),
+            @Result(property = "reviewCount", column = "review_count"),
+            @Result(property = "stockStatus", column = "stock_status"),
+            @Result(property = "lastChecked", column = "last_checked"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at"),
+            @Result(property = "status", column = "status")
+    })
     List<Product> selectByCategory(String category);
 
     /**
      * 根据品牌查询商品
      */
     @Select("SELECT * FROM products WHERE brand = #{brand} AND status = 1 ORDER BY created_at DESC")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "url", column = "url"),
+            @Result(property = "imageUrl", column = "image_url"),
+            @Result(property = "platform", column = "platform"),
+            @Result(property = "platformId", column = "platform_id"),
+            @Result(property = "brand", column = "brand"),
+            @Result(property = "category", column = "category"),
+            @Result(property = "currentPrice", column = "current_price"),
+            @Result(property = "originalPrice", column = "original_price"),
+            @Result(property = "discountRate", column = "discount_rate"),
+            @Result(property = "salesCount", column = "sales_count"),
+            @Result(property = "rating", column = "rating"),
+            @Result(property = "reviewCount", column = "review_count"),
+            @Result(property = "stockStatus", column = "stock_status"),
+            @Result(property = "lastChecked", column = "last_checked"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at"),
+            @Result(property = "status", column = "status")
+    })
     List<Product> selectByBrand(String brand);
 
     /**
@@ -134,5 +177,55 @@ public interface ProductMapper {
      */
     @Select("SELECT * FROM products WHERE current_price BETWEEN #{minPrice} AND #{maxPrice} " +
             "AND status = 1 ORDER BY current_price ASC")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "url", column = "url"),
+            @Result(property = "imageUrl", column = "image_url"),
+            @Result(property = "platform", column = "platform"),
+            @Result(property = "platformId", column = "platform_id"),
+            @Result(property = "brand", column = "brand"),
+            @Result(property = "category", column = "category"),
+            @Result(property = "currentPrice", column = "current_price"),
+            @Result(property = "originalPrice", column = "original_price"),
+            @Result(property = "discountRate", column = "discount_rate"),
+            @Result(property = "salesCount", column = "sales_count"),
+            @Result(property = "rating", column = "rating"),
+            @Result(property = "reviewCount", column = "review_count"),
+            @Result(property = "stockStatus", column = "stock_status"),
+            @Result(property = "lastChecked", column = "last_checked"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at"),
+            @Result(property = "status", column = "status")
+    })
     List<Product> selectByPriceRange(@Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice);
+
+    /**
+     * 根据关键词搜索商品
+     */
+    @Select("SELECT * FROM products WHERE (name LIKE CONCAT('%', #{keyword}, '%') " +
+            "OR brand LIKE CONCAT('%', #{keyword}, '%')) AND status = 1 " +
+            "ORDER BY created_at DESC")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "url", column = "url"),
+            @Result(property = "imageUrl", column = "image_url"),
+            @Result(property = "platform", column = "platform"),
+            @Result(property = "platformId", column = "platform_id"),
+            @Result(property = "brand", column = "brand"),
+            @Result(property = "category", column = "category"),
+            @Result(property = "currentPrice", column = "current_price"),
+            @Result(property = "originalPrice", column = "original_price"),
+            @Result(property = "discountRate", column = "discount_rate"),
+            @Result(property = "salesCount", column = "sales_count"),
+            @Result(property = "rating", column = "rating"),
+            @Result(property = "reviewCount", column = "review_count"),
+            @Result(property = "stockStatus", column = "stock_status"),
+            @Result(property = "lastChecked", column = "last_checked"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at"),
+            @Result(property = "status", column = "status")
+    })
+    List<Product> searchByKeyword(String keyword);
 }

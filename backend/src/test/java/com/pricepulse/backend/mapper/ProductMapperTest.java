@@ -26,7 +26,7 @@ class ProductMapperTest {
         product.setName("测试商品");
         product.setUrl("https://test.com/product/123");
         product.setImageUrl("https://test.com/image.jpg");
-        product.setPlatform(PlatformEnum.TAOBAO);
+        product.setPlatform("taobao");
         product.setPlatformId("test123");
         product.setBrand("测试品牌");
         product.setCategory("测试分类");
@@ -144,7 +144,7 @@ class ProductMapperTest {
         Product product = new Product();
         product.setName("测试商品_" + System.currentTimeMillis());
         product.setUrl("https://test.com/product/" + System.currentTimeMillis());
-        product.setPlatform(PlatformEnum.TAOBAO);
+        product.setPlatform("taobao");
         product.setPlatformId("test_" + System.currentTimeMillis());
         product.setCurrentPrice(new BigDecimal("99.99"));
         product.setStatus(1);

@@ -149,7 +149,7 @@ class ProductServiceTest {
         Product product = new Product();
         product.setName("测试商品");
         product.setUrl("https://test.com/product/123");
-        product.setPlatform(PlatformEnum.TAOBAO);
+        product.setPlatform("taobao");
         product.setCurrentPrice(new BigDecimal("99.99"));
         product.setBrand("测试品牌");
         product.setCategory("测试分类");

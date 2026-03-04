@@ -46,7 +46,7 @@ class NotificationServiceTest {
         product.setId(1L);
         product.setName("测试商品");
         product.setUrl("https://test.com");
-        product.setPlatform(PlatformEnum.TMALL);
+        product.setPlatform("tmall");
         product.setCurrentPrice(new BigDecimal("9999.00"));
         return product;
     }

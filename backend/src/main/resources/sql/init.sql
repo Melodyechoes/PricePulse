@@ -94,5 +94,20 @@ CREATE INDEX idx_products_price ON products(current_price);
 CREATE INDEX idx_price_history_date_range ON price_history(checked_at, product_id);
 CREATE INDEX idx_user_products_notification ON user_products(notification_enabled, user_id);
 
+
+
+-- 添加 description 字段
+ALTER TABLE products ADD COLUMN description TEXT COMMENT '商品描述';
+
 -- Show tables
 SHOW TABLES;
+
+
+USE price_pulse;
+
+-- 查看所有商品
+SELECT * FROM products ORDER BY id DESC LIMIT 10;
+
+-- 查看刚添加的商品（如果知道 ID）
+SELECT * FROM products WHERE id = (SELECT MAX(id) FROM products);
+

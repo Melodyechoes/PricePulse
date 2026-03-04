@@ -48,12 +48,50 @@ public class ProductController {
     }
 
     /**
-     * 获取所有商品
+     * 获取所有商品（支持搜索、分类、排序）
      */
     @GetMapping
-    public Result<List<Product>> getAllProducts() {
+    public Result<List<Product>> getAllProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String sort) {
         try {
-            List<Product> products = productService.getAllProducts();
+            List<Product> products;
+
+            // 根据参数选择查询方法
+            if (keyword != null && !keyword.isEmpty()) {
+                // 关键词搜索
+                products = productService.searchByKeyword(keyword);
+            } else if (category != null && !category.isEmpty()) {
+                // 分类筛选
+                products = productService.getProductsByCategory(category);
+            } else {
+                // 获取所有商品
+                products = productService.getAllProducts();
+            }
+
+            // 价格排序（添加空值检查）
+            if ("asc".equals(sort)) {
+                products.sort((p1, p2) -> {
+                    BigDecimal price1 = p1.getCurrentPrice();
+                    BigDecimal price2 = p2.getCurrentPrice();
+                    if (price1 == null && price2 == null) return 0;
+                    if (price1 == null) return 1;
+                    if (price2 == null) return -1;
+                    return price1.compareTo(price2);
+                });
+            } else if ("desc".equals(sort)) {
+                products.sort((p1, p2) -> {
+                    BigDecimal price1 = p1.getCurrentPrice();
+                    BigDecimal price2 = p2.getCurrentPrice();
+                    if (price1 == null && price2 == null) return 0;
+                    if (price1 == null) return 1;
+                    if (price2 == null) return -1;
+                    return price2.compareTo(price1);
+                });
+            }
+
+            log.info("获取商品列表成功，共 {} 个商品", products.size());
             return Result.success(products);
         } catch (Exception e) {
             log.error("获取商品列表失败", e);
