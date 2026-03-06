@@ -105,9 +105,12 @@ SHOW TABLES;
 
 USE price_pulse;
 
--- 查看所有商品
-SELECT * FROM products ORDER BY id DESC LIMIT 10;
+-- 查看 user_products 表中的数据
+SELECT * FROM user_products WHERE user_id = 1;
 
--- 查看刚添加的商品（如果知道 ID）
-SELECT * FROM products WHERE id = (SELECT MAX(id) FROM products);
+-- 查看 products 表中是否有对应的商品
+SELECT * FROM products WHERE id IN (SELECT product_id FROM user_products WHERE user_id = 1);
 
+SELECT id, user_id, product_id, target_price, notification_enabled, price_drop_threshold
+FROM user_products
+WHERE user_id = 1;

@@ -101,25 +101,8 @@ const priceHistoryLoading = ref(false)
 const route = useRoute()
 const router = useRouter()
 const productsStore = useProductsStore()
-
 const loading = ref(false)
 const isFollowed = ref(false)
-
-const currentProduct = computed(() => productsStore.currentProduct)
-
-
-const fetchProductDetail = async () => {
-  loading.value = true
-  try {
-    await productsStore.fetchProductDetail(route.params.id)
-  } catch (error) {
-    console.error('加载商品详情失败:', error)
-    ElMessage.error('加载失败')
-  } finally {
-    loading.value = false
-  }
-}
-
 
 const goBack = () => {
   router.back()
@@ -161,6 +144,32 @@ const viewPriceHistory = async () => {
 onMounted(() => {
   fetchProductDetail()
 })
+
+// 检查路由参数是否存在
+if (!route.params.id) {
+  console.error('缺少商品 ID 参数')
+  ElMessage.error('商品 ID 不能为空')
+  router.push('/products')
+}
+
+const currentProduct = computed(() => productsStore.currentProduct)
+
+const fetchProductDetail = async () => {
+  if (!route.params.id) {
+    console.error('商品 ID 为空，无法加载详情')
+    return
+  }
+
+  loading.value = true
+  try {
+    await productsStore.fetchProductDetail(route.params.id)
+  } catch (error) {
+    console.error('加载商品详情失败:', error)
+    ElMessage.error('加载失败')
+  } finally {
+    loading.value = false
+  }
+}
 
 </script>
 

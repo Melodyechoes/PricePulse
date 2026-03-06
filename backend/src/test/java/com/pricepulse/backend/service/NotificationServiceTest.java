@@ -23,23 +23,26 @@ class NotificationServiceTest {
         // 发送降价通知
         notificationService.sendPriceDropNotification(
                 1L,
-                product,
-                new BigDecimal("8999.00")
+                product.getName(),
+                9999.00,
+                8999.00
         );
 
         // 验证方法执行成功（主要看日志）
         assertThat(true).isTrue();
     }
 
+
     @Test
     void testSendStockNotification() {
         Product product = createTestProduct();
 
         // 发送到货通知
-        notificationService.sendStockNotification(1L, product);
+        notificationService.sendStockNotification(1L, product.getName());
 
         assertThat(true).isTrue();
     }
+
 
     private Product createTestProduct() {
         Product product = new Product();

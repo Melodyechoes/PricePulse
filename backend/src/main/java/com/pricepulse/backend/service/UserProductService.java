@@ -7,10 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import java.math.BigDecimal;
 import java.util.List;
+import org.apache.ibatis.annotations.*;
 
 @Service
 @Slf4j
@@ -74,11 +73,12 @@ public class UserProductService {
      */
     public List<UserProduct> getUserFollowedProducts(Long userId) {
         if (userId == null) {
-            throw new BusinessException("用户ID不能为空");
+            throw new BusinessException("用户 ID 不能为空");
         }
-        return userProductMapper.selectByUserId(userId);
+        // 使用关联查询，返回包含商品信息的 UserProductWithProduct 对象
+        // UserProductWithProduct 是 UserProduct 的子类，可以安全转换
+        return (List<UserProduct>) (List<?>) userProductMapper.selectByUserIdWithProductInfo(userId);
     }
-
     /**
      * 获取关注某商品的用户列表
      */

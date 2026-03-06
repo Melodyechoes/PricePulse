@@ -48,11 +48,10 @@ export function unfollowProduct(productId) {
 }
 
 // 获取用户关注的商品列表
-export function getUserFollowedProducts(params) {
+export function getUserFollowedProducts(userId) {
     return request({
-        url: '/user-products/my-follows',
-        method: 'get',
-        params
+        url: `/user-products/user/${userId}`,
+        method: 'get'
     })
 }
 

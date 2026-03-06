@@ -1,5 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
+  <MainLayout>
   <div class="home-container">
     <div class="home-header">
       <h1>欢迎使用 Price Pulse</h1>
@@ -49,9 +50,10 @@
       </div>
     </div>
   </div>
+  </MainLayout>
 </template>
 
-<script setup>
+<script setup>import MainLayout from '@/components/layout/MainLayout.vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessageBox } from 'element-plus'

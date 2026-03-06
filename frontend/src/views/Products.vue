@@ -1,5 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
+  <MainLayout>
   <div class="products-container">
     <div class="products-header">
       <h1>商品列表</h1>
@@ -127,9 +128,12 @@
         @success="fetchProducts"
     />
   </div>
+  </MainLayout>
 </template>
 
-<script setup>import { ref, onMounted, computed } from 'vue'
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import MainLayout from '@/components/layout/MainLayout.vue'
 import { useRouter } from 'vue-router'
 import { useProductsStore } from '@/stores/products'
 import { followProduct as followProductApi, unfollowProduct as unfollowProductApi } from '@/api/products'

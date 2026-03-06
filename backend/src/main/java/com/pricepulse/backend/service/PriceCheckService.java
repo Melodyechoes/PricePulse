@@ -131,8 +131,9 @@ public class PriceCheckService {
             if (shouldNotify(userProduct, product, priceInfo)) {
                 notificationService.sendPriceDropNotification(
                         userProduct.getUserId(),
-                        product,
-                        priceInfo.getCurrentPrice()
+                        product.getName(),
+                        product.getCurrentPrice() != null ? product.getCurrentPrice().doubleValue() : 0.0,
+                        priceInfo.getCurrentPrice() != null ? priceInfo.getCurrentPrice().doubleValue() : 0.0
                 );
             }
         }

@@ -36,6 +36,12 @@ const routes = [
         name: 'ProductDetail',
         component: () => import('@/views/ProductDetail.vue'),
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/profile',
+        name: 'Profile',
+        component: () => import('@/views/Profile.vue'),
+        meta: { requiresAuth: true }
     }
 ]
 
@@ -62,3 +68,4 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
+
