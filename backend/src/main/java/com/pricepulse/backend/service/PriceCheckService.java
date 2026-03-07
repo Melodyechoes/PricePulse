@@ -132,13 +132,12 @@ public class PriceCheckService {
                 notificationService.sendPriceDropNotification(
                         userProduct.getUserId(),
                         product.getName(),
-                        product.getCurrentPrice() != null ? product.getCurrentPrice().doubleValue() : 0.0,
-                        priceInfo.getCurrentPrice() != null ? priceInfo.getCurrentPrice().doubleValue() : 0.0
+                        product.getCurrentPrice() != null ? product.getCurrentPrice() : BigDecimal.ZERO,
+                        priceInfo.getCurrentPrice() != null ? priceInfo.getCurrentPrice() : BigDecimal.ZERO
                 );
             }
         }
     }
-
     /**
      * 判断是否应该发送通知
      */

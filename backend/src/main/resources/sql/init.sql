@@ -103,14 +103,63 @@ ALTER TABLE products ADD COLUMN description TEXT COMMENT '商品描述';
 SHOW TABLES;
 
 
+-- 创建通知表
+CREATE TABLE IF NOT EXISTS notifications (
+                                             id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '通知 ID',
+                                             user_id BIGINT NOT NULL COMMENT '用户 ID',
+                                             message VARCHAR(500) NOT NULL COMMENT '通知内容',
+                                             type VARCHAR(50) NOT NULL COMMENT '通知类型：PRICE_DROP-降价通知，STOCK_IN-到货通知',
+                                             is_read TINYINT DEFAULT 0 COMMENT '是否已读：0-未读，1-已读',
+                                             related_product_id BIGINT COMMENT '关联商品 ID',
+                                             created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                             INDEX idx_user_id (user_id),
+                                             INDEX idx_type (type),
+                                             INDEX idx_is_read (is_read),
+                                             INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户通知表';
+
+-- 插入测试数据（逐条插入，避免语法错误）
+INSERT INTO notifications (user_id, message, type, is_read, related_product_id, created_at)
+VALUES (1, '您关注的商品【iPhone 15 Pro Max】降价了！原价 9999.00 元，现价 9499.00 元，降幅 5.0%', 'PRICE_DROP', 0, 1, DATE_SUB(NOW(), INTERVAL 1 HOUR));
+
+INSERT INTO notifications (user_id, message, type, is_read, related_product_id, created_at)
+VALUES (1, '您关注的商品【Sony WH-1000XM5】降价了！原价 2499.00 元，现价 2299.00 元，降幅 8.0%', 'PRICE_DROP', 0, 26, DATE_SUB(NOW(), INTERVAL 2 HOUR));
+
+INSERT INTO notifications (user_id, message, type, is_read, related_product_id, created_at)
+VALUES (1, '您关注的商品【iPad Pro 2024】已到货！', 'STOCK_IN', 1, 25, DATE_SUB(NOW(), INTERVAL 1 DAY));
+
+INSERT INTO notifications (user_id, message, type, is_read, related_product_id, created_at)
+VALUES (1, '您关注的商品【MacBook Pro 14】降价了！原价 12999.00 元，现价 11999.00 元，降幅 7.7%', 'PRICE_DROP', 1, 35, DATE_SUB(NOW(), INTERVAL 2 DAY));
+
+
 USE price_pulse;
 
--- 查看 user_products 表中的数据
-SELECT * FROM user_products WHERE user_id = 1;
+-- 创建通知表
+CREATE TABLE IF NOT EXISTS notifications (
+                                             id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '通知 ID',
+                                             user_id BIGINT NOT NULL COMMENT '用户 ID',
+                                             message VARCHAR(500) NOT NULL COMMENT '通知内容',
+                                             type VARCHAR(50) NOT NULL COMMENT '通知类型：PRICE_DROP-降价通知，STOCK_IN-到货通知',
+                                             is_read TINYINT DEFAULT 0 COMMENT '是否已读：0-未读，1-已读',
+                                             related_product_id BIGINT COMMENT '关联商品 ID',
+                                             created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                             INDEX idx_user_id (user_id),
+                                             INDEX idx_type (type),
+                                             INDEX idx_is_read (is_read),
+                                             INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户通知表';
 
--- 查看 products 表中是否有对应的商品
-SELECT * FROM products WHERE id IN (SELECT product_id FROM user_products WHERE user_id = 1);
+-- 插入测试数据
+INSERT INTO notifications (user_id, message, type, is_read, related_product_id, created_at)
+VALUES (1, '您关注的商品【iPhone 15 Pro Max】降价了！原价 9999.00 元，现价 9499.00 元，降幅 5.0%', 'PRICE_DROP', 0, 1, DATE_SUB(NOW(), INTERVAL 1 HOUR));
 
-SELECT id, user_id, product_id, target_price, notification_enabled, price_drop_threshold
-FROM user_products
-WHERE user_id = 1;
+INSERT INTO notifications (user_id, message, type, is_read, related_product_id, created_at)
+VALUES (1, '您关注的商品【Sony WH-1000XM5】降价了！原价 2499.00 元，现价 2299.00 元，降幅 8.0%', 'PRICE_DROP', 0, 26, DATE_SUB(NOW(), INTERVAL 2 HOUR));
+
+INSERT INTO notifications (user_id, message, type, is_read, related_product_id, created_at)
+VALUES (1, '您关注的商品【iPad Pro 2024】已到货！', 'STOCK_IN', 1, 25, DATE_SUB(NOW(), INTERVAL 1 DAY));
+
+INSERT INTO notifications (user_id, message, type, is_read, related_product_id, created_at)
+VALUES (1, '您关注的商品【MacBook Pro 14】降价了！原价 12999.00 元，现价 11999.00 元，降幅 7.7%', 'PRICE_DROP', 1, 35, DATE_SUB(NOW(), INTERVAL 2 DAY));

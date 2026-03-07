@@ -12,6 +12,13 @@
       </div>
 
       <div class="user-info">
+        <!-- 通知铃铛图标 -->
+        <el-badge :value="unreadCount" :hidden="unreadCount === 0" class="notification-bell-wrapper">
+          <el-button text size="large" @click="goToNotifications">
+            <el-icon><bell /></el-icon>
+          </el-button>
+        </el-badge>
+
         <el-dropdown>
           <span class="user-name">
             {{ userStore.userInfo?.username || '用户' }}
@@ -30,19 +37,48 @@
 </template>
 
 <script setup>
-import { useRouter} from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessageBox } from 'element-plus'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown, Bell } from '@element-plus/icons-vue'
+import request from '@/utils/request'
 
 const router = useRouter()
 const userStore = useUserStore()
+const unreadCount = ref(0)
+
+onMounted(async () => {
+  await loadUnreadCount()
+  // 每 5 分钟更新一次未读数量
+  const interval = setInterval(loadUnreadCount, 5 * 60 * 1000)
+  onUnmounted(() => clearInterval(interval))
+})
+
+const loadUnreadCount = async () => {
+  try {
+    const res = await request.get('/notifications/unread-count', {
+      params: { userId: userStore.userInfo?.id || 1 }
+    })
+
+    if (res.code === 200) {
+      unreadCount.value = res.data?.count || 0
+    }
+  } catch (error) {
+    console.error('加载未读数量失败:', error)
+  }
+}
+
 const goHome = () => {
   router.push('/home')
 }
 
 const goToProfile = () => {
   router.push('/profile')
+}
+
+const goToNotifications = () => {
+  router.push('/notifications')
 }
 
 const handleLogout = async () => {
@@ -62,7 +98,6 @@ const handleLogout = async () => {
   }
 }
 </script>
-
 <style scoped>
 .app-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -115,17 +150,52 @@ const handleLogout = async () => {
 
 .user-info {
   color: white;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
+/* 铃铛图标样式 */
+.notification-bell-wrapper :deep(.el-button) {
+  color: white !important;
+  border: none !important;
+  background: transparent !important;
+  font-size: 20px !important;
+  padding: 8px !important;
+  transition: all 0.3s;
+}
+
+.notification-bell-wrapper :deep(.el-button):hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.1);
+}
+
+.notification-bell-wrapper :deep(.el-badge__content) {
+  background-color: #ff4949 !important;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* 用户名样式 */
 .user-name {
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
   padding: 8px 12px;
   border-radius: 6px;
-  transition: background 0.3s;
+  transition: all 0.3s;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .user-name:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+}
+
+.user-name :deep(.el-icon) {
+  vertical-align: middle;
+  margin-left: 4px;
 }
 </style>

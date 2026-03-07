@@ -24,8 +24,8 @@ class NotificationServiceTest {
         notificationService.sendPriceDropNotification(
                 1L,
                 product.getName(),
-                9999.00,
-                8999.00
+                new BigDecimal("9999.00"),
+                new BigDecimal("8999.00")
         );
 
         // 验证方法执行成功（主要看日志）

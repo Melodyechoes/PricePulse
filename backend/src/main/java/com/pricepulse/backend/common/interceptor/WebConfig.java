@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 登录拦截器（旧版，用于Session）
+        // 登录拦截器（旧版，用于 Session）
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(
@@ -25,17 +25,19 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/auth/**",  // 排除认证接口
                         "/api/products/**",
                         "/api/user-products/**",
+                        "/api/notifications/**",  // 新增：排除通知接口
                         "/error",
                         "/static/**",
                         "/webjars/**"
                 );
 
-        // JWT拦截器（新版，用于Token认证）
+        // JWT 拦截器（新版，用于 Token 认证）
         registry.addInterceptor(jwtInterceptor)
-                .addPathPatterns("/api/protected/**")  // 需要Token保护的路径
+                .addPathPatterns("/api/protected/**")  // 需要 Token 保护的路径
                 .excludePathPatterns(
                         "/api/auth/**",
                         "/api/products/**",
+                        "/api/notifications/**",  // 新增：排除通知接口
                         "/error"
                 );
     }

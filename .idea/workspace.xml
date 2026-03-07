@@ -5,25 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7d70965-c039-4b7b-a178-1d9e189b0af4" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/UserProductWithProduct.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/NotificationController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/layout/AppHeader.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/layout/MainLayout.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/layout/NotificationBell.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/Profile.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/entity/NotificationEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/NotificationMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/NotificationCenter.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/d26197b2-82c0-4745-97d6-0efa5cc90655.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/d26197b2-82c0-4745-97d6-0efa5cc90655.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/UserProductMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/UserProductMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/interceptor/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/interceptor/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/NotificationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/NotificationController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/NotificationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/NotificationService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/PriceCheckService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/PriceCheckService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/UserProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/UserProductService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/sql/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/sql/init.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/NotificationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/NotificationServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/products.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/products.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/AppHeader.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/AppHeader.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/views/Home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/Home.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/views/ProductDetail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/ProductDetail.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/views/Products.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/Products.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +26,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="104" />
+    <option name="cachedIndexableFilesCount" value="111" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -273,7 +268,8 @@
       <workItem from="1772515844116" duration="2663000" />
       <workItem from="1772527432343" duration="678000" />
       <workItem from="1772602117954" duration="11896000" />
-      <workItem from="1772767225824" duration="15136000" />
+      <workItem from="1772767225824" duration="15803000" />
+      <workItem from="1772860918829" duration="7725000" />
     </task>
     <servers />
   </component>
