@@ -7,6 +7,7 @@
 
       <div class="nav-menu">
         <router-link to="/home" class="nav-item">首页</router-link>
+        <router-link to="/dashboard" class="nav-item">数据统计</router-link>
         <router-link to="/products" class="nav-item">商品列表</router-link>
         <router-link to="/profile" class="nav-item">个人中心</router-link>
       </div>
@@ -36,8 +37,7 @@
   </el-header>
 </template>
 
-<script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+<script setup>import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessageBox } from 'element-plus'
@@ -47,12 +47,20 @@ import request from '@/utils/request'
 const router = useRouter()
 const userStore = useUserStore()
 const unreadCount = ref(0)
+let interval = null
+
+// ✅ 在 await 之前注册 onUnmounted
+onUnmounted(() => {
+  if (interval) {
+    clearInterval(interval)
+  }
+})
 
 onMounted(async () => {
   await loadUnreadCount()
+
   // 每 5 分钟更新一次未读数量
-  const interval = setInterval(loadUnreadCount, 5 * 60 * 1000)
-  onUnmounted(() => clearInterval(interval))
+  interval = setInterval(loadUnreadCount, 5 * 60 * 1000)
 })
 
 const loadUnreadCount = async () => {
@@ -98,6 +106,7 @@ const handleLogout = async () => {
   }
 }
 </script>
+
 <style scoped>
 .app-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

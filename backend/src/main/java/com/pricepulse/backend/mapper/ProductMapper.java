@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ProductMapper {
@@ -228,4 +229,12 @@ public interface ProductMapper {
             @Result(property = "status", column = "status")
     })
     List<Product> searchByKeyword(String keyword);
+
+    /**
+     * 按分类统计商品数量
+     */
+    @SelectProvider(type = ProductSqlProvider.class, method = "countByCategory")
+    List<Map<String, Object>> countByCategory(@Param("productIds") java.util.List<Long> productIds);
+
 }
+

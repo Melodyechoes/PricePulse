@@ -25,7 +25,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/auth/**",  // 排除认证接口
                         "/api/products/**",
                         "/api/user-products/**",
-                        "/api/notifications/**",  // 新增：排除通知接口
+                        "/api/notifications/**",  // 排除通知接口
+                        "/api/dashboard/**",  // 新增：排除 Dashboard 接口
                         "/error",
                         "/static/**",
                         "/webjars/**"
@@ -37,7 +38,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/api/auth/**",
                         "/api/products/**",
-                        "/api/notifications/**",  // 新增：排除通知接口
+                        "/api/notifications/**",  // 排除通知接口
+                        "/api/dashboard/**",  // 新增：排除 Dashboard 接口
                         "/error"
                 );
     }

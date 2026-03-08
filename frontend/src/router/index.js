@@ -48,6 +48,13 @@ const routes = [
         name: 'Notifications',
         component: () => import('@/views/NotificationCenter.vue'),
         meta: { requiresAuth: true }
+    },
+
+    {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/Dashboard.vue'),
+        meta: { requiresAuth: true }
     }
 ]
 

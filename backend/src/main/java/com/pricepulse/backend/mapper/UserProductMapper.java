@@ -88,6 +88,23 @@ public interface UserProductMapper {
     })
     List<UserProductWithProduct> selectByUserIdWithProductInfo(Long userId);
 
+
+    /**
+     * 根据用户 ID 查询关注列表（仅 UserProduct）
+     */
+    @Select("SELECT * FROM user_products WHERE user_id = #{userId} ORDER BY created_at DESC")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "userId", column = "user_id"),
+            @Result(property = "productId", column = "product_id"),
+            @Result(property = "targetPrice", column = "target_price"),
+            @Result(property = "notificationEnabled", column = "notification_enabled"),
+            @Result(property = "priceDropThreshold", column = "price_drop_threshold"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at")
+    })
+    List<UserProduct> selectByUserId(Long userId);
+
     /**
      * 根据商品 ID 查询关注用户
      */
@@ -127,4 +144,6 @@ public interface UserProductMapper {
      */
     @Select("SELECT COUNT(*) FROM user_products WHERE product_id = #{productId}")
     int countByProductId(Long productId);
+
+
 }

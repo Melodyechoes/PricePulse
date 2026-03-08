@@ -3,7 +3,10 @@ package com.pricepulse.backend.mapper;
 import com.pricepulse.backend.common.entity.PriceHistory;
 import org.apache.ibatis.annotations.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PriceHistoryMapper {
@@ -53,4 +56,51 @@ public interface PriceHistoryMapper {
      */
     @Delete("DELETE FROM price_history WHERE checked_at < #{date}")
     int deleteOlderThan(java.time.LocalDateTime date);
+
+    /**
+     * 统计今日降价商品数量
+     */
+    @Select("SELECT COUNT(DISTINCT ph.product_id) " +
+            "FROM price_history ph " +
+            "INNER JOIN user_products up ON ph.product_id = up.product_id " +
+            "WHERE up.user_id = #{userId} " +
+            "AND ph.checked_at >= #{todayStart} " +
+            "AND ph.price < (SELECT MAX(price) FROM price_history WHERE product_id = ph.product_id AND checked_at < ph.checked_at)")
+    int countPriceDropsToday(@Param("userId") Long userId, @Param("todayStart") LocalDateTime todayStart);
+
+    /**
+     * 计算总节省金额
+     */
+    @Select("SELECT SUM((original_price - current_price) * sales_count) " +
+            "FROM products p " +
+            "INNER JOIN user_products up ON p.id = up.product_id " +
+            "WHERE up.user_id = #{userId} " +
+            "AND p.current_price < p.original_price")
+    BigDecimal calculateTotalSavings(@Param("userId") Long userId);
+
+
+    /**
+     * 获取最近 N 天的平均价格（使用 SQL Provider）
+     */
+    @SelectProvider(type = PriceHistorySqlProvider.class, method = "getAveragePriceByDays")
+    List<Map<String, Object>> getAveragePriceByDays(
+            @Param("productIds") List<Long> productIds,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("days") Integer days);
+
+
+
+    /**
+     * 按分类统计商品数量（使用 SQL Provider）
+     */
+    @SelectProvider(type = ProductSqlProvider.class, method = "countByCategory")
+    Map<String, Integer> countByCategory(@Param("productIds") List<Long> productIds);
+
+    /**
+     * 获取降价排行榜（使用 SQL Provider）
+     */
+    @SelectProvider(type = PriceHistorySqlProvider.class, method = "getPriceDropRanking")
+    List<Map<String, Object>> getPriceDropRanking(
+            @Param("productIds") List<Long> productIds,
+            @Param("limit") Integer limit);
 }
