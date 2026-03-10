@@ -40,29 +40,18 @@
 <script setup>import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { ElMessageBox } from 'element-plus'
+import { ElMessageBox, ElNotification } from 'element-plus'
 import { ArrowDown, Bell } from '@element-plus/icons-vue'
 import request from '@/utils/request'
+import wsClient from '@/utils/websocket'
 
 const router = useRouter()
 const userStore = useUserStore()
 const unreadCount = ref(0)
 let interval = null
 
-// ✅ 在 await 之前注册 onUnmounted
-onUnmounted(() => {
-  if (interval) {
-    clearInterval(interval)
-  }
-})
 
-onMounted(async () => {
-  await loadUnreadCount()
-
-  // 每 5 分钟更新一次未读数量
-  interval = setInterval(loadUnreadCount, 5 * 60 * 1000)
-})
-
+// 加载未读数量
 const loadUnreadCount = async () => {
   try {
     const res = await request.get('/notifications/unread-count', {
@@ -76,6 +65,52 @@ const loadUnreadCount = async () => {
     console.error('加载未读数量失败:', error)
   }
 }
+
+// WebSocket 消息处理函数
+const handleWebSocketMessage = (event) => {
+  console.log('收到 WebSocket 通知:', event.detail)
+
+  // 更新未读数量
+  loadUnreadCount()
+
+  // 可以在这里添加更多处理逻辑
+  const { type, message } = event.detail
+
+  // 显示 Element Plus 通知
+  ElNotification({
+    title: type === 'PRICE_DROP' ? '💰 降价通知' : '📦 到货通知',
+    message: message,
+    type: type === 'PRICE_DROP' ? 'success' : 'info',
+    duration: 4000,
+    position: 'bottom-right'
+  })
+}
+
+// ✅ 在 await 之前注册 onUnmounted
+onUnmounted(() => {
+  if (interval) {
+    clearInterval(interval)
+  }
+
+  // 断开 WebSocket 连接
+  wsClient.disconnect()
+
+  // 移除事件监听
+  window.removeEventListener('websocket-notification', handleWebSocketMessage)
+})
+
+onMounted(async () => {
+  await loadUnreadCount()
+
+  // 每 5 分钟更新一次未读数量
+  interval = setInterval(loadUnreadCount, 5 * 60 * 1000)
+
+  // 连接 WebSocket
+  wsClient.connect()
+
+  // 监听 WebSocket 消息
+  window.addEventListener('websocket-notification', handleWebSocketMessage)
+})
 
 const goHome = () => {
   router.push('/home')

@@ -29,7 +29,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/dashboard/**",  // 新增：排除 Dashboard 接口
                         "/error",
                         "/static/**",
-                        "/webjars/**"
+                        "/api/test/**",
+                        "/webjars/**",
+                        "/favicon.ico"
                 );
 
         // JWT 拦截器（新版，用于 Token 认证）

@@ -163,3 +163,15 @@ VALUES (1, '您关注的商品【iPad Pro 2024】已到货！', 'STOCK_IN', 1, 2
 
 INSERT INTO notifications (user_id, message, type, is_read, related_product_id, created_at)
 VALUES (1, '您关注的商品【MacBook Pro 14】降价了！原价 12999.00 元，现价 11999.00 元，降幅 7.7%', 'PRICE_DROP', 1, 35, DATE_SUB(NOW(), INTERVAL 2 DAY));
+
+
+-- 插入一条测试通知
+INSERT INTO notifications (user_id, message, type, is_read, created_at, updated_at)
+VALUES (
+           1,
+           '📉 您关注的商品【测试商品】降价了！原价 ¥1000.00，现价 ¥800.00，降幅 20.0%',
+           'PRICE_DROP',
+           0,
+           NOW(),
+           NOW()
+       );
