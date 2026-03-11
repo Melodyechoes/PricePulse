@@ -55,7 +55,15 @@ const routes = [
         name: 'Dashboard',
         component: () => import('@/views/Dashboard.vue'),
         meta: { requiresAuth: true }
-    }
+    },
+
+    {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/Dashboard.vue'),
+        meta: { requiresAuth: true }
+    },
+
 ]
 
 const router = createRouter({

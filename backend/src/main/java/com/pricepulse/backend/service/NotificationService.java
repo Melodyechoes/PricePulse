@@ -1,14 +1,18 @@
 package com.pricepulse.backend.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pricepulse.backend.common.entity.NotificationEntity;
+import com.pricepulse.backend.common.websocket.NotificationWebSocketHandler;
 import com.pricepulse.backend.mapper.NotificationMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @Service
 @Slf4j
@@ -17,6 +21,11 @@ public class NotificationService {
     @Autowired
     private NotificationMapper notificationMapper;
 
+    @Autowired
+    private NotificationWebSocketHandler webSocketHandler;
+
+    @Autowired
+    private ObjectMapper objectMapper;
     /**
      * 发送降价通知
      */
@@ -32,20 +41,9 @@ public class NotificationService {
         // 保存通知到数据库
         saveNotification(userId, message, "PRICE_DROP");
 
-        // TODO: 发送邮件通知
-        // sendEmailNotification(userId, message);
+        // 发送 WebSocket 实时通知
+        sendWebSocketNotification(userId, "PRICE_DROP", message);
     }
-
-    /**
-     * 发送到货通知
-     */
-    public void sendStockNotification(Long userId, String productName) {
-        String message = "📦 您关注的商品【" + productName + "】已到货！";
-
-        log.info(message);
-        saveNotification(userId, message, "STOCK_IN");
-    }
-
     /**
      * 获取用户的通知列表
      */
@@ -98,5 +96,24 @@ public class NotificationService {
 
         notificationMapper.insert(notification);
         log.info("保存通知：userId={}, message={}, type={}", userId, message, type);
+    }
+
+    /**
+     * 发送 WebSocket 实时通知
+     */
+    private void sendWebSocketNotification(Long userId, String type, String message) {
+        try {
+            Map<String, Object> notification = new HashMap<>();
+            notification.put("type", type);
+            notification.put("message", message);
+            notification.put("timestamp", System.currentTimeMillis());
+
+            String jsonMessage = objectMapper.writeValueAsString(notification);
+            webSocketHandler.sendNotification(userId, jsonMessage);
+
+            log.debug("已发送 WebSocket 通知给 userId={}", userId);
+        } catch (Exception e) {
+            log.error("发送 WebSocket 通知失败", e);
+        }
     }
 }

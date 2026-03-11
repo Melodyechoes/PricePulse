@@ -9,8 +9,7 @@
         <router-link to="/home" class="nav-item">首页</router-link>
         <router-link to="/dashboard" class="nav-item">数据统计</router-link>
         <router-link to="/products" class="nav-item">商品列表</router-link>
-        <router-link to="/profile" class="nav-item">个人中心</router-link>
-      </div>
+        <router-link to="/profile" class="nav-item">个人中心</router-link>     </div>
 
       <div class="user-info">
         <!-- 通知铃铛图标 -->
@@ -37,7 +36,8 @@
   </el-header>
 </template>
 
-<script setup>import { ref, onMounted, onUnmounted } from 'vue'
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessageBox, ElNotification } from 'element-plus'
@@ -73,19 +73,29 @@ const handleWebSocketMessage = (event) => {
   // 更新未读数量
   loadUnreadCount()
 
-  // 可以在这里添加更多处理逻辑
   const { type, message } = event.detail
+
+  // 根据不同类型的通知显示不同的图标和标题
+  let title = '📢 系统通知'
+  let icon = 'info'
+
+  if (type === 'PRICE_DROP') {
+    title = '💰 降价通知'
+    icon = 'success'
+  } else if (type === 'PRICE_ALERT') {
+    title = '🚨 价格异常提醒'
+    icon = 'warning'
+  }
 
   // 显示 Element Plus 通知
   ElNotification({
-    title: type === 'PRICE_DROP' ? '💰 降价通知' : '📦 到货通知',
+    title: title,
     message: message,
-    type: type === 'PRICE_DROP' ? 'success' : 'info',
-    duration: 4000,
+    type: icon,
+    duration: 5000,
     position: 'bottom-right'
   })
 }
-
 // ✅ 在 await 之前注册 onUnmounted
 onUnmounted(() => {
   if (interval) {
@@ -110,8 +120,15 @@ onMounted(async () => {
 
   // 监听 WebSocket 消息
   window.addEventListener('websocket-notification', handleWebSocketMessage)
-})
 
+  // WebSocket 断线重连监听
+  window.addEventListener('websocket-disconnected', () => {
+    console.log('WebSocket 已断开，5 秒后尝试重连...')
+    setTimeout(() => {
+      wsClient.connect()
+    }, 5000)
+  })
+})
 const goHome = () => {
   router.push('/home')
 }

@@ -56,6 +56,9 @@ class WebSocketClient {
                 console.warn('❌ WebSocket 连接关闭')
                 this.stopHeartbeat()
 
+                // 触发断连事件
+                window.dispatchEvent(new CustomEvent('websocket-disconnected'))
+
                 // 尝试重连
                 this.scheduleReconnect()
             }

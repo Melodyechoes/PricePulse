@@ -21,18 +21,43 @@ public class NotificationController {
      * 获取用户的通知列表
      */
     @GetMapping
-    public Result<List<com.pricepulse.backend.common.entity.NotificationEntity>> getUserNotifications(
-            @RequestParam Long userId) {
+    public Result getUserNotifications(
+            @RequestParam(defaultValue = "1") Long userId,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer pageSize) {
         try {
             List<com.pricepulse.backend.common.entity.NotificationEntity> notifications =
                     notificationService.getUserNotifications(userId);
-            return Result.success(notifications);
+
+            // 简单分页
+            int total = notifications.size();
+            int fromIndex = (page - 1) * pageSize;
+            int toIndex = Math.min(fromIndex + pageSize, total);
+
+            if (fromIndex >= total) {
+                return Result.success(new HashMap<String, Object>() {{
+                    put("list", new java.util.ArrayList<>());
+                    put("total", 0);
+                    put("page", page);
+                    put("pageSize", pageSize);
+                }});
+            }
+
+            List<com.pricepulse.backend.common.entity.NotificationEntity> pageData =
+                    notifications.subList(fromIndex, toIndex);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("list", pageData);
+            result.put("total", total);
+            result.put("page", page);
+            result.put("pageSize", pageSize);
+
+            return Result.success(result);
         } catch (Exception e) {
             log.error("获取通知列表失败", e);
             return Result.error(e.getMessage());
         }
     }
-
     /**
      * 标记通知为已读
      */

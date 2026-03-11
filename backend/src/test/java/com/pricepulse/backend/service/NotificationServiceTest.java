@@ -32,18 +32,6 @@ class NotificationServiceTest {
         assertThat(true).isTrue();
     }
 
-
-    @Test
-    void testSendStockNotification() {
-        Product product = createTestProduct();
-
-        // 发送到货通知
-        notificationService.sendStockNotification(1L, product.getName());
-
-        assertThat(true).isTrue();
-    }
-
-
     private Product createTestProduct() {
         Product product = new Product();
         product.setId(1L);

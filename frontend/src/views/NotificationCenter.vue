@@ -27,7 +27,6 @@
             >
               <div class="notification-icon">
                 <el-icon v-if="item.type === 'PRICE_DROP'" color="#67C23A"><money /></el-icon>
-                <el-icon v-else-if="item.type === 'STOCK_IN'" color="#409EFF"><goods /></el-icon>
                 <el-icon v-else color="#909399"><bell /></el-icon>
               </div>
 
@@ -47,8 +46,7 @@
                 </el-button>
                 <el-button
                     type="text"
-                    size="small"
-                    style="color: #F56C6C;"
+                    size="small"                    style="color: #F56C6C;"
                     @click="deleteNotification(item.id)"
                 >
                   删除
@@ -67,7 +65,7 @@ import MainLayout from '@/components/layout/MainLayout.vue'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Money, Goods, Bell } from '@element-plus/icons-vue'
+import { Money, Bell } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import axios from "axios";
 
@@ -99,16 +97,39 @@ const loadNotifications = async () => {
     console.log('=== 通知 API 响应 ===')
     console.log('原始响应:', res)
     console.log('响应 data:', res.data)
-    console.log('通知列表:', res.data?.data)
+    console.log('通知列表:', res.data)
 
     if (res.code === 200) {
-      notifications.value = res.data || []
+      // 修复：res 已经是 response.data，所以直接访问 res.data
+      const responseData = res.data
 
-      console.log('处理后的通知数量:', notifications.value.length)
-      console.log('第一条通知:', notifications.value[0])
+      console.log('responseData:', responseData)
+      console.log('responseData 类型:', typeof responseData, Array.isArray(responseData))
 
-      // 如果有未读通知，显示角标（可以在 AppHeader 中显示）
-      const unreadCount = notifications.value.filter(n => !n.isRead).length
+      // 如果 responseData 是对象且有 list 属性
+      if (responseData && typeof responseData === 'object' && responseData.list) {
+        notifications.value = responseData.list || []
+        console.log('从 list 获取数据，数量:', notifications.value.length)
+      }
+      // 如果 responseData 本身就是数组
+      else if (Array.isArray(responseData)) {
+        notifications.value = responseData
+        console.log('直接使用数组，数量:', notifications.value.length)
+      }
+      // 否则使用空数组
+      else {
+        notifications.value = []
+        console.log('使用空数组')
+      }
+
+      console.log('最终通知数量:', notifications.value.length)
+      if (notifications.value.length > 0) {
+        console.log('第一条通知:', notifications.value[0])
+        console.log('第一条通知的 isRead:', notifications.value[0]?.isRead)
+      }
+
+      // 如果有未读通知，显示角标
+      const unreadCount = notifications.value.filter(n => n && !n.isRead).length
       if (unreadCount > 0) {
         console.log(`有 ${unreadCount} 条未读通知`)
       } else {

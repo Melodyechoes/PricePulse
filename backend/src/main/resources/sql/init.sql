@@ -175,3 +175,28 @@ VALUES (
            NOW(),
            NOW()
        );
+
+CREATE TABLE IF NOT EXISTS alert_logs (
+                                          id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '告警 ID',
+                                          user_id BIGINT NOT NULL COMMENT '用户 ID',
+                                          product_id BIGINT NOT NULL COMMENT '商品 ID',
+                                          product_name VARCHAR(500) COMMENT '商品名称',
+                                          alert_type VARCHAR(50) NOT NULL COMMENT '告警类型：PRICE_DROP=降价，STOCK_CHANGE=库存变化',
+                                          original_price DECIMAL(10,2) COMMENT '原始价格',
+                                          current_price DECIMAL(10,2) COMMENT '当前价格',
+                                          price_drop_percent DECIMAL(5,2) COMMENT '降价百分比',
+                                          alert_message TEXT COMMENT '告警消息内容',
+                                          is_read TINYINT DEFAULT 0 COMMENT '是否已读：0=未读，1=已读',
+                                          created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                          INDEX idx_user_id (user_id),
+                                          INDEX idx_product_id (product_id),
+                                          INDEX idx_is_read (is_read),
+                                          INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='价格告警日志表';
+
+USE price_pulse;
+
+INSERT INTO notifications (user_id, message, type, is_read, created_at, updated_at) VALUES
+                                                                                        (1, '📉 您关注的商品【Apple iPhone 15 Pro】降价了！原价 ¥8999.00，现价 ¥7999.00，降幅 11.1%', 'PRICE_DROP', 0, NOW(), NOW()),
+                                                                                        (1, '📉 您关注的商品【华为 Mate 60 Pro】降价了！原价 ¥6999.00，现价 ¥6499.00，降幅 7.1%', 'PRICE_DROP', 0, NOW(), NOW()),
+                                                                                        (1, '📉 您关注的商品【小米 14 Ultra】降价了！原价 ¥5999.00，现价 ¥5499.00，降幅 8.3%', 'PRICE_DROP', 1, DATE_SUB(NOW(), INTERVAL 30 MINUTE), NOW());
