@@ -236,5 +236,11 @@ public interface ProductMapper {
     @SelectProvider(type = ProductSqlProvider.class, method = "countByCategory")
     List<Map<String, Object>> countByCategory(@Param("productIds") java.util.List<Long> productIds);
 
+    /**
+     * 按平台统计商品数量
+     */
+    @SelectProvider(type = ProductSqlProvider.class, method = "countByPlatform")
+    List<Map<String, Object>> countByPlatform(@Param("productIds") java.util.List<Long> productIds);
+
 }
 

@@ -7,6 +7,7 @@ import java.util.List;
 
 public class PriceHistorySqlProvider {
 
+
     public String getAveragePriceByDays(List<Long> productIds, LocalDateTime startDate) {
         String ids = String.join(",", productIds.stream().map(String::valueOf).toArray(String[]::new));
 
@@ -31,6 +32,23 @@ public class PriceHistorySqlProvider {
             WHERE("p.id IN (" + ids + ")");
             WHERE("p.current_price < p.original_price");
             ORDER_BY("dropPercent DESC");
+            LIMIT(String.valueOf(limit));
+        }}.toString();
+    }
+
+    public String getVolatilityRanking(List<Long> productIds, Integer limit) {
+        String ids = String.join(",", productIds.stream().map(String::valueOf).toArray(String[]::new));
+
+        return new SQL() {{
+            SELECT("p.id as productId, p.name as productName");
+            SELECT("MAX(ph.price) as maxPrice, MIN(ph.price) as minPrice");
+            SELECT("AVG(ph.price) as avgPrice");
+            SELECT("ROUND((MAX(ph.price) - MIN(ph.price)) / AVG(ph.price) * 100, 2) as volatility");
+            FROM("price_history ph");
+            INNER_JOIN("products p ON ph.product_id = p.id");
+            WHERE("ph.product_id IN (" + ids + ")");
+            GROUP_BY("p.id, p.name");
+            ORDER_BY("volatility DESC");
             LIMIT(String.valueOf(limit));
         }}.toString();
     }

@@ -6,17 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="d7d70965-c039-4b7b-a178-1d9e189b0af4" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/d26197b2-82c0-4745-97d6-0efa5cc90655.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/d26197b2-82c0-4745-97d6-0efa5cc90655.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/NotificationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/NotificationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/NotificationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/NotificationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/sql/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/sql/init.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/controller/TestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/controller/TestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/NotificationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/NotificationServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/AppHeader.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/AppHeader.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/utils/websocket.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/utils/websocket.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/views/NotificationCenter.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/NotificationCenter.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/DashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/NotificationMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/NotificationMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/PriceHistoryMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/PriceHistoryMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/PriceHistorySqlProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/PriceHistorySqlProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/ProductMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/ProductMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/ProductSqlProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/ProductSqlProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/DashboardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/cache/DashboardCacheService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/cache/DashboardCacheService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/views/Dashboard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/Dashboard.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -274,7 +273,8 @@
       <workItem from="1772942241810" duration="4273000" />
       <workItem from="1773103031199" duration="493000" />
       <workItem from="1773116266072" duration="10491000" />
-      <workItem from="1773200683979" duration="6036000" />
+      <workItem from="1773200683979" duration="7106000" />
+      <workItem from="1773289854649" duration="4738000" />
     </task>
     <servers />
   </component>
@@ -318,7 +318,6 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/frontend/src/components/layout/AppHeader.vue</url>
           <line>161</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>

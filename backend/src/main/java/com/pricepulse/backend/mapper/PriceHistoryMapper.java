@@ -103,4 +103,12 @@ public interface PriceHistoryMapper {
     List<Map<String, Object>> getPriceDropRanking(
             @Param("productIds") List<Long> productIds,
             @Param("limit") Integer limit);
+
+    /**
+     * 获取价格波动率排行（使用 SQL Provider）
+     */
+    @SelectProvider(type = PriceHistorySqlProvider.class, method = "getVolatilityRanking")
+    List<Map<String, Object>> getVolatilityRanking(
+            @Param("productIds") List<Long> productIds,
+            @Param("limit") Integer limit);
 }

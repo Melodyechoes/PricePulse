@@ -3,7 +3,9 @@ package com.pricepulse.backend.mapper;
 import com.pricepulse.backend.common.entity.NotificationEntity;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface NotificationMapper {
@@ -65,10 +67,21 @@ public interface NotificationMapper {
      */
     @Delete("DELETE FROM notifications WHERE id = #{id}")
     int deleteById(Long id);
-
     /**
      * 统计未读通知数量
      */
     @Select("SELECT COUNT(*) FROM notifications WHERE user_id = #{userId} AND is_read = 0")
     int countUnread(Long userId);
+
+    /**
+     * 根据用户 ID 和时间统计通知数量
+     */
+    @Select("SELECT COUNT(*) FROM notifications WHERE user_id = #{userId} AND created_at >= #{since}")
+    int countByUserIdAndTime(@Param("userId") Long userId, @Param("since") LocalDateTime since);
+
+    /**
+     * 按类型统计通知数量
+     */
+    @Select("SELECT type, COUNT(*) as count FROM notifications WHERE user_id = #{userId} GROUP BY type")
+    List<Map<String, Object>> countByType(Long userId);
 }

@@ -1,6 +1,7 @@
 package com.pricepulse.backend.service;
 
 
+import com.pricepulse.backend.mapper.NotificationMapper;
 import com.pricepulse.backend.mapper.PriceHistoryMapper;
 import com.pricepulse.backend.mapper.ProductMapper;
 import com.pricepulse.backend.mapper.UserProductMapper;
@@ -27,6 +28,9 @@ public class DashboardService {
 
     @Autowired
     private PriceHistoryMapper priceHistoryMapper;
+
+    @Autowired
+    private NotificationMapper notificationMapper;
 
     @Autowired
     private DashboardCacheService cacheService;
@@ -187,6 +191,94 @@ public class DashboardService {
         // 3. 写入缓存
         cacheService.setPriceDropRanking(userId, limit, ranking);
 
+        return ranking;
+    }
+
+    /**
+     * 获取通知统计数据
+     */
+    public Map<String, Object> getNotificationStats(Long userId) {
+        Object cached = cacheService.getNotificationStats(userId);
+        if (cached != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> stats = (Map<String, Object>) cached;
+            return stats;
+        }
+
+        Map<String, Object> stats = new HashMap<>();
+
+        // 今日通知数量
+        LocalDateTime todayStart = LocalDate.now().atStartOfDay();
+        int todayCount = notificationMapper.countByUserIdAndTime(userId, todayStart);
+        stats.put("todayCount", todayCount);
+
+        // 本周通知数量
+        LocalDateTime weekStart = LocalDate.now().minusDays(7).atStartOfDay();
+        int weekCount = notificationMapper.countByUserIdAndTime(userId, weekStart);
+        stats.put("weekCount", weekCount);
+
+        // 本月通知数量
+        LocalDateTime monthStart = LocalDate.now().minusDays(30).atStartOfDay();
+        int monthCount = notificationMapper.countByUserIdAndTime(userId, monthStart);
+        stats.put("monthCount", monthCount);
+
+        // 按类型统计
+        List<Map<String, Object>> typeStats = notificationMapper.countByType(userId);
+        stats.put("typeStats", typeStats);
+
+        cacheService.setNotificationStats(userId, stats);
+        return stats;
+    }
+
+    /**
+     * 获取平台分布数据
+     */
+    public List<Map<String, Object>> getPlatformDistribution(Long userId) {
+        Object cached = cacheService.getPlatformDistribution(userId);
+        if (cached != null) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> distribution = (List<Map<String, Object>>) cached;
+            return distribution;
+        }
+
+        var userProducts = userProductMapper.selectByUserId(userId);
+        if (userProducts == null || userProducts.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Long> productIds = userProducts.stream()
+                .map(up -> up.getProductId())
+                .collect(Collectors.toList());
+
+        List<Map<String, Object>> distribution = productMapper.countByPlatform(productIds);
+
+        cacheService.setPlatformDistribution(userId, distribution);
+        return distribution;
+    }
+
+    /**
+     * 获取价格波动率排行
+     */
+    public List<Map<String, Object>> getVolatilityRanking(Long userId, Integer limit) {
+        Object cached = cacheService.getVolatilityRanking(userId, limit);
+        if (cached != null) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> ranking = (List<Map<String, Object>>) cached;
+            return ranking;
+        }
+
+        var userProducts = userProductMapper.selectByUserId(userId);
+        if (userProducts == null || userProducts.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Long> productIds = userProducts.stream()
+                .map(up -> up.getProductId())
+                .collect(Collectors.toList());
+
+        List<Map<String, Object>> ranking = priceHistoryMapper.getVolatilityRanking(productIds, limit);
+
+        cacheService.setVolatilityRanking(userId, limit, ranking);
         return ranking;
     }
 }

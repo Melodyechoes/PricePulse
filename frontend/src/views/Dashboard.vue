@@ -91,6 +91,68 @@
         </el-col>
       </el-row>
 
+      <!-- 新增图表行 -->
+      <el-row :gutter="20" style="margin-top: 20px;">
+        <!-- 通知统计 -->
+        <el-col :span="12">
+          <el-card>
+            <template #header>
+              <span>📢 通知统计</span>
+            </template>
+            <div v-loading="notificationLoading" style="height: 300px;">
+              <v-chart v-if="notificationOption" :option="notificationOption" autoresize />
+            </div>
+          </el-card>
+        </el-col>
+
+        <!-- 平台分布 -->
+        <el-col :span="12">
+          <el-card>
+            <template #header>
+              <span>🏪 平台分布</span>
+            </template>
+            <div v-loading="platformLoading" style="height: 300px;">
+              <v-chart v-if="platformOption" :option="platformOption" autoresize />
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <!-- 价格波动率排行 -->
+      <el-row :gutter="20" style="margin-top: 20px;">
+        <el-col :span="24">
+          <el-card>
+            <template #header>
+              <span>📊 价格波动率 Top 10</span>
+            </template>
+            <el-table :data="volatilityRanking" style="width: 100%" v-loading="volatilityLoading">
+              <el-table-column type="index" label="排名" width="60" />
+              <el-table-column prop="productName" label="商品名称" />
+              <el-table-column prop="maxPrice" label="最高价" width="100">
+                <template #default="{ row }">
+                  ¥{{ row.maxPrice }}
+                </template>
+              </el-table-column>
+              <el-table-column prop="minPrice" label="最低价" width="100">
+                <template #default="{ row }">
+                  ¥{{ row.minPrice }}
+                </template>
+              </el-table-column>
+              <el-table-column prop="avgPrice" label="平均价" width="100">
+                <template #default="{ row }">
+                  ¥{{ row.avgPrice }}
+                </template>
+              </el-table-column>
+              <el-table-column prop="volatility" label="波动率" width="100">
+                <template #default="{ row }">
+                  <el-tag :type="getVolatilityType(row.volatility)">{{ row.volatility }}%</el-tag>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+        </el-col>
+      </el-row>
+
       <!-- 降价排行榜 -->
       <el-row :gutter="20" style="margin-top: 20px;">
         <el-col :span="24">
@@ -171,11 +233,27 @@ const categoryOption = ref(null)
 const rankingLoading = ref(false)
 const priceDropRanking = ref([])
 
+// 通知统计
+const notificationLoading = ref(false)
+const notificationOption = ref(null)
+
+// 平台分布
+const platformLoading = ref(false)
+const platformOption = ref(null)
+
+// 价格波动率排行
+const volatilityLoading = ref(false)
+const volatilityRanking = ref([])
+
+
 onMounted(async () => {
   await loadStats()
   await loadPriceTrend()
   await loadCategoryDistribution()
   await loadPriceDropRanking()
+  await loadNotificationStats()
+  await loadPlatformDistribution()
+  await loadVolatilityRanking()
 })
 
 // 加载统计数据
@@ -363,8 +441,165 @@ const loadPriceDropRanking = async () => {
     rankingLoading.value = false
   }
 }
+
 const viewProduct = (productId) => {
   router.push(`/product/${productId}`)
+}
+
+// 加载通知统计
+const loadNotificationStats = async () => {
+  notificationLoading.value = true
+  try {
+    const userId = userStore.userInfo?.id || 1
+    const res = await request.get('/dashboard/notification-stats', {
+      params: { userId }
+    })
+
+    if (res.code === 200) {
+      const data = res.data
+      notificationOption.value = {
+        title: {
+          text: '通知接收统计',
+          left: 'center',
+          textStyle: {
+            fontSize: 16,
+            fontWeight: 'bold'
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: ['今日', '本周', '本月'],
+          axisLabel: {
+            interval: 0,
+            rotate: 0
+          }
+        },
+        yAxis: {
+          type: 'value',
+          name: '通知数量'
+        },
+        series: [{
+          data: [
+            data.todayCount || 0,
+            data.weekCount || 0,
+            data.monthCount || 0
+          ],
+          type: 'bar',
+          barWidth: '40%',
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#83bff6' },
+              { offset: 0.5, color: '#188df0' },
+              { offset: 1, color: '#188df0' }
+            ])
+          },
+          label: {
+            show: true,
+            position: 'top'
+          }
+        }]
+      }
+    }
+  } catch (error) {
+    console.error('加载通知统计失败:', error)
+  } finally {
+    notificationLoading.value = false
+  }
+}
+
+// 加载平台分布
+const loadPlatformDistribution = async () => {
+  platformLoading.value = true
+  try {
+    const userId = userStore.userInfo?.id || 1
+    const res = await request.get('/dashboard/platform-distribution', {
+      params: { userId }
+    })
+
+    if (res.code === 200) {
+      const platforms = res.data || []
+
+      if (platforms.length === 0) {
+        platformOption.value = null
+        return
+      }
+
+      platformOption.value = {
+        title: {
+          text: '关注商品平台分布',
+          left: 'center',
+          textStyle: {
+            fontSize: 16,
+            fontWeight: 'bold'
+          }
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+          top: 'middle'
+        },
+        series: [{
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['55%', '50%'],
+          data: platforms,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          },
+          label: {
+            formatter: '{b}: {d}%'
+          }
+        }]
+      }
+    }
+  } catch (error) {
+    console.error('加载平台分布失败:', error)
+  } finally {
+    platformLoading.value = false
+  }
+}
+
+// 加载价格波动率排行
+const loadVolatilityRanking = async () => {
+  volatilityLoading.value = true
+  try {
+    const userId = userStore.userInfo?.id || 1
+    const res = await request.get('/dashboard/volatility-ranking', {
+      params: {
+        userId,
+        limit: 10
+      }
+    })
+
+    if (res.code === 200) {
+      volatilityRanking.value = res.data || []
+    }
+  } catch (error) {
+    console.error('加载价格波动率排行失败:', error)
+  } finally {
+    volatilityLoading.value = false
+  }
+}
+
+// 获取波动率标签类型
+const getVolatilityType = (volatility) => {
+  if (volatility >= 20) return 'danger'
+  if (volatility >= 10) return 'warning'
+  return 'success'
 }
 </script>
 

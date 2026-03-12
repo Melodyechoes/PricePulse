@@ -75,4 +75,48 @@ public class DashboardController {
             return Result.error(e.getMessage());
         }
     }
+
+    /**
+     * 获取通知统计数据
+     */
+    @GetMapping("/notification-stats")
+    public Result<Map<String, Object>> getNotificationStats(@RequestParam Long userId) {
+        try {
+            Map<String, Object> stats = dashboardService.getNotificationStats(userId);
+            return Result.success(stats);
+        } catch (Exception e) {
+            log.error("获取通知统计失败", e);
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取平台分布数据
+     */
+    @GetMapping("/platform-distribution")
+    public Result<List<Map<String, Object>>> getPlatformDistribution(@RequestParam Long userId) {
+        try {
+            List<Map<String, Object>> distribution = dashboardService.getPlatformDistribution(userId);
+            return Result.success(distribution);
+        } catch (Exception e) {
+            log.error("获取平台分布失败", e);
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取价格波动率排行
+     */
+    @GetMapping("/volatility-ranking")
+    public Result<List<Map<String, Object>>> getVolatilityRanking(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "10") Integer limit) {
+        try {
+            List<Map<String, Object>> ranking = dashboardService.getVolatilityRanking(userId, limit);
+            return Result.success(ranking);
+        } catch (Exception e) {
+            log.error("获取价格波动率排行失败", e);
+            return Result.error(e.getMessage());
+        }
+    }
 }
