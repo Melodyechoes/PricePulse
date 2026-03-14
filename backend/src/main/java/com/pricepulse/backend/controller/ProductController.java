@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -54,23 +55,34 @@ public class ProductController {
     public Result<List<Product>> getAllProducts(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String sort) {
+            @RequestParam(required = false) String platform,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer pageSize) {
         try {
-            List<Product> products;
-
-            // 根据参数选择查询方法
+            // 构建查询参数
+            Map<String, Object> params = new java.util.HashMap<>();
             if (keyword != null && !keyword.isEmpty()) {
-                // 关键词搜索
-                products = productService.searchByKeyword(keyword);
-            } else if (category != null && !category.isEmpty()) {
-                // 分类筛选
-                products = productService.getProductsByCategory(category);
-            } else {
-                // 获取所有商品
-                products = productService.getAllProducts();
+                params.put("keyword", keyword);
+            }
+            if (category != null && !category.isEmpty()) {
+                params.put("category", category);
+            }
+            if (platform != null && !platform.isEmpty()) {
+                params.put("platform", platform);
+            }
+            if (minPrice != null) {
+                params.put("minPrice", minPrice);
+            }
+            if (maxPrice != null) {
+                params.put("maxPrice", maxPrice);
             }
 
-            // 价格排序（添加空值检查）
+            List<Product> products = productService.searchWithFilters(params);
+
+            // 价格排序
             if ("asc".equals(sort)) {
                 products.sort((p1, p2) -> {
                     BigDecimal price1 = p1.getCurrentPrice();
@@ -95,6 +107,20 @@ public class ProductController {
             return Result.success(products);
         } catch (Exception e) {
             log.error("获取商品列表失败", e);
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取所有可筛选的分类和平台
+     */
+    @GetMapping("/filters")
+    public Result<Map<String, Object>> getAvailableFilters() {
+        try {
+            Map<String, Object> filters = productService.getAvailableFilters();
+            return Result.success(filters);
+        } catch (Exception e) {
+            log.error("获取筛选条件失败", e);
             return Result.error(e.getMessage());
         }
     }

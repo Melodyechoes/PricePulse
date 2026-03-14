@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -195,5 +197,50 @@ public class ProductService {
         }
         return productMapper.searchByKeyword(keyword);
     }
+
+    /**
+     * 多条件组合搜索
+     */
+    public List<Product> searchWithFilters(Map<String, Object> params) {
+        String keyword = (String) params.get("keyword");
+        String category = (String) params.get("category");
+        String platform = (String) params.get("platform");
+        BigDecimal minPrice = (BigDecimal) params.get("minPrice");
+        BigDecimal maxPrice = (BigDecimal) params.get("maxPrice");
+
+        // 如果只有关键词，直接使用关键词搜索
+        if (keyword != null && category == null && platform == null &&
+                minPrice == null && maxPrice == null) {
+            return searchByKeyword(keyword);
+        }
+
+        // 多条件查询
+        return productMapper.searchWithFilters(
+                keyword,
+                category,
+                platform,
+                minPrice,
+                maxPrice
+        );
+    }
+
+
+    /**
+     * 获取所有可用的筛选条件
+     */
+    public Map<String, Object> getAvailableFilters() {
+        Map<String, Object> filters = new HashMap<>();
+
+        // 获取所有分类
+        List<String> categories = productMapper.selectAllCategories();
+        filters.put("categories", categories);
+
+        // 获取所有平台
+        List<String> platforms = productMapper.selectAllPlatforms();
+        filters.put("platforms", platforms);
+
+        return filters;
+    }
+
 
 }

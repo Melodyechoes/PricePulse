@@ -23,11 +23,14 @@ spring:
 server:
   port: 8080
 
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
 logging:
   level:
     com.pricepulse: debug
     org.springframework.data.redis: debug
-
 jwt:
   secret: PricePulseSecretKey2026VeryLongSecretKeyForSecurity123456
   expiration: 86400000  # 24小时，单位毫秒

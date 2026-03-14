@@ -1,53 +1,91 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <MainLayout>
-  <div class="products-container">
-    <div class="products-header">
-      <h1>商品列表</h1>
-      <el-button type="primary" @click="showAddDialog">
-        <el-icon><Plus /></el-icon>
-        添加商品
-      </el-button>
-    </div>
+    <div class="products-container">
+      <div class="products-header">
+        <h1>🔍 商品列表</h1>
+        <el-button type="primary" @click="showAddDialog">
+          <el-icon><Plus /></el-icon>
+          添加商品
+        </el-button>
+      </div>
 
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <el-input
-          v-model="searchKeyword"
-          placeholder="搜索商品名称"
-          style="width: 300px"
-          clearable
-          @clear="fetchProducts"
-      >
-        <template #append>
-          <el-button @click="fetchProducts">
-            <el-icon><Search /></el-icon>
-          </el-button>
-        </template>
-      </el-input>
+      <!-- 搜索栏 -->
+      <div class="search-bar">
+        <div class="search-row">
+          <el-input
+              v-model="searchKeyword"
+              placeholder="搜索商品名称或品牌"            style="width: 300px"
+              clearable
+              @keyup.enter="fetchProducts"
+          >
+            <template #append>
+              <el-button @click="fetchProducts">
+                <el-icon><Search /></el-icon>
+              </el-button>
+            </template>
+          </el-input>
 
-      <el-select
-          v-model="categoryFilter"
-          placeholder="选择分类"
-          clearable
-          @change="fetchProducts"
-      >
-        <el-option label="全部" value="" />
-        <el-option label="数码" value="digital" />
-        <el-option label="服装" value="clothing" />
-        <el-option label="家居" value="home" />
-      </el-select>
+          <el-select
+              v-model="platformFilter"
+              placeholder="选择平台"
+              clearable
+              @change="fetchProducts"            style="width: 150px"
+          >
+            <el-option label="全部平台" value="" />
+            <el-option v-for="platform in availableFilters.platforms"
+                       :key="platform"
+                       :label="platform"
+                       :value="platform" />
+          </el-select>
 
-      <el-select
-          v-model="priceSort"
-          placeholder="价格排序"
-          @change="fetchProducts"
-      >
-        <el-option label="默认排序" value="" />
-        <el-option label="价格从低到高" value="asc" />
-        <el-option label="价格从高到低" value="desc" />
-      </el-select>
-    </div>
+          <el-select
+              v-model="categoryFilter"
+              placeholder="选择分类"
+              clearable
+              @change="fetchProducts"            style="width: 150px"
+          >
+            <el-option label="全部分类" value="" />
+            <el-option v-for="category in availableFilters.categories"
+                       :key="category"
+                       :label="category"
+                       :value="category" />
+          </el-select>
+        </div>
+
+        <div class="search-row">
+          <el-input-number
+              v-model="minPrice"
+              placeholder="最低价"
+              :min="0"
+              :precision="2"
+              controls-position="right"            style="width: 150px"
+              @change="fetchProducts"
+          />
+          <span style="margin: 0 10px;">-</span>
+          <el-input-number
+              v-model="maxPrice"
+              placeholder="最高价"
+              :min="0"
+              :precision="2"
+              controls-position="right"            style="width: 150px"
+              @change="fetchProducts"
+          />
+
+          <el-select
+              v-model="priceSort"
+              placeholder="价格排序"
+              @change="fetchProducts"            style="width: 150px"
+          >
+            <el-option label="默认排序" value="" />
+            <el-option label="价格从低到高" value="asc" />
+            <el-option label="价格从高到低" value="desc" />
+          </el-select>
+
+          <el-button type="primary" @click="fetchProducts">查询</el-button>
+          <el-button @click="resetFilters">重置</el-button>
+        </div>
+      </div>
 
     <!-- 商品列表 -->
     <div class="product-list" v-loading="loading">
@@ -141,17 +179,39 @@ import { ElMessage } from 'element-plus'
 import { Search, Plus } from '@element-plus/icons-vue'
 import AddProductDialog from '@/components/AddProductDialog.vue'
 
+
 const router = useRouter()
 const productsStore = useProductsStore()
 
 const searchKeyword = ref('')
+const platformFilter = ref('')
 const categoryFilter = ref('')
+const minPrice = ref(null)
+const maxPrice = ref(null)
 const priceSort = ref('')
 const loading = ref(false)
 const showAddDialogFlag = ref(false)
 
+const availableFilters = ref({
+  platforms: [],
+  categories: []
+})
+
 const productList = computed(() => productsStore.productList)
 const pagination = computed(() => productsStore.pagination)
+
+// 加载可用筛选条件
+const loadAvailableFilters = async () => {
+  try {
+    const res = await fetch('/api/products/filters')
+    const data = await res.json()
+    if (data.code === 200) {
+      availableFilters.value = data.data
+    }
+  } catch (error) {
+    console.error('加载筛选条件失败:', error)
+  }
+}
 
 const fetchProducts = async () => {
   loading.value = true
@@ -160,7 +220,10 @@ const fetchProducts = async () => {
       page: pagination.value.page,
       size: pagination.value.size,
       keyword: searchKeyword.value || undefined,
+      platform: platformFilter.value || undefined,
       category: categoryFilter.value || undefined,
+      minPrice: minPrice.value || undefined,
+      maxPrice: maxPrice.value || undefined,
       sort: priceSort.value || undefined
     }
     await productsStore.fetchProducts(params)
@@ -174,6 +237,16 @@ const fetchProducts = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const resetFilters = () => {
+  searchKeyword.value = ''
+  platformFilter.value = ''
+  categoryFilter.value = ''
+  minPrice.value = null
+  maxPrice.value = null
+  priceSort.value = ''
+  fetchProducts()
 }
 
 const goToDetail = (id) => {
@@ -208,6 +281,11 @@ onMounted(() => {
   fetchProducts()
 })
 
+onMounted(async () => {
+  await loadAvailableFilters()
+  await fetchProducts()
+})
+
 const handleImageError = (e) => {
   e.target.style.display = 'none'
 }
@@ -239,11 +317,19 @@ const handleImageError = (e) => {
 
 .search-bar {
   display: flex;
+  flex-direction: column;
   gap: 15px;
   margin-bottom: 20px;
   padding: 20px;
   background: white;
   border-radius: 12px;
+}
+
+.search-row {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .product-list {

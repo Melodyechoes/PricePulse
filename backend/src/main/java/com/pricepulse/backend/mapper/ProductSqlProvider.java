@@ -2,6 +2,7 @@ package com.pricepulse.backend.mapper;
 
 import org.apache.ibatis.jdbc.SQL;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductSqlProvider {
@@ -25,6 +26,37 @@ public class ProductSqlProvider {
             FROM("products");
             WHERE("id IN (" + ids + ")");
             GROUP_BY("platform");
+        }}.toString();
+    }
+
+    public String searchWithFilters(String keyword, String category, String platform,
+                                    BigDecimal minPrice, BigDecimal maxPrice) {
+        return new SQL() {{
+            SELECT("*");
+            FROM("products");
+            WHERE("status = 1");
+
+            if (keyword != null && !keyword.isEmpty()) {
+                WHERE("(name LIKE '%" + keyword + "%' OR brand LIKE '%" + keyword + "%')");
+            }
+
+            if (category != null && !category.isEmpty()) {
+                WHERE("category = '" + category + "'");
+            }
+
+            if (platform != null && !platform.isEmpty()) {
+                WHERE("platform = '" + platform + "'");
+            }
+
+            if (minPrice != null) {
+                WHERE("current_price >= " + minPrice);
+            }
+
+            if (maxPrice != null) {
+                WHERE("current_price <= " + maxPrice);
+            }
+
+            ORDER_BY("created_at DESC");
         }}.toString();
     }
 }

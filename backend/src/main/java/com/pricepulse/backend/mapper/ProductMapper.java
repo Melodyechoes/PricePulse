@@ -242,5 +242,28 @@ public interface ProductMapper {
     @SelectProvider(type = ProductSqlProvider.class, method = "countByPlatform")
     List<Map<String, Object>> countByPlatform(@Param("productIds") java.util.List<Long> productIds);
 
+    /**
+     * 多条件组合搜索商品
+     */
+    @SelectProvider(type = ProductSqlProvider.class, method = "searchWithFilters")
+    List<Product> searchWithFilters(
+            @Param("keyword") String keyword,
+            @Param("category") String category,
+            @Param("platform") String platform,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice
+    );
+
+    /**
+     * 获取所有分类
+     */
+    @Select("SELECT DISTINCT category FROM products WHERE status = 1 AND category IS NOT NULL ORDER BY category")
+    List<String> selectAllCategories();
+
+    /**
+     * 获取所有平台
+     */
+    @Select("SELECT DISTINCT platform FROM products WHERE status = 1 AND platform IS NOT NULL ORDER BY platform")
+    List<String> selectAllPlatforms();
 }
 
