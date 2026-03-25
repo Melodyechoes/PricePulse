@@ -1,78 +1,178 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <MainLayout>
-  <div class="home-container">
-    <div class="home-header">
-      <h1>欢迎使用 Price Pulse</h1>
-      <p>智能价格监控系统 - 让您不再错过任何一次降价</p>
-    </div>
+    <div class="home-container">
+      <!-- 欢迎区域 -->
+      <div class="welcome-section">
+        <h1 class="welcome-title">🎯 Price Pulse - 智能价格监控</h1>
+        <p class="welcome-subtitle">实时监控 · 自动提醒 · 省钱购物</p>
 
-    <div class="home-content">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="8">
-          <el-card class="feature-card" shadow="hover">
-            <div class="feature-icon">🛍️</div>
-            <h3>商品管理</h3>
-            <p>添加您感兴趣的商品，支持淘宝、京东等多个平台</p>
-            <router-link to="/products">
-              <el-button type="primary" plain>查看商品</el-button>
-            </router-link>
-          </el-card>
-        </el-col>
+        <div class="stats-overview">
+          <el-row :gutter="20">
+            <el-col :span="6">
+              <div class="stat-item">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+                  <el-icon><shopping-cart /></el-icon>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ stats.productCount }}</div>
+                  <div class="stat-label">商品总数</div>
+                </div>
+              </div>
+            </el-col>
 
-        <el-col :xs="24" :sm="12" :md="8">
-          <el-card class="feature-card" shadow="hover">
-            <div class="feature-icon">📊</div>
-            <h3>价格监控</h3>
-            <p>自动跟踪商品价格变化，每小时更新一次</p>
-            <el-button type="primary" plain disabled>即将上线</el-button>
-          </el-card>
-        </el-col>
+            <el-col :span="6">
+              <div class="stat-item">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
+                  <el-icon><trend-charts /></el-icon>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ stats.priceDropToday }}</div>
+                  <div class="stat-label">今日降价</div>
+                </div>
+              </div>
+            </el-col>
 
-        <el-col :xs="24" :sm="12" :md="8">
-          <el-card class="feature-card" shadow="hover">
-            <div class="feature-icon">🔔</div>
-            <h3>降价提醒</h3>
-            <p>商品价格下降时，第一时间通知您</p>
-            <el-button type="primary" plain disabled>即将上线</el-button>
-          </el-card>
-        </el-col>
-      </el-row>
+            <el-col :span="6">
+              <div class="stat-item">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
+                  <el-icon><bell /></el-icon>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ stats.notificationCount }}</div>
+                  <div class="stat-label">未读通知</div>
+                </div>
+              </div>
+            </el-col>
 
+            <el-col :span="6">
+              <div class="stat-item">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
+                  <el-icon><clock /></el-icon>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">30min</div>
+                  <div class="stat-label">更新频率</div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+
+      <!-- 快捷入口 -->
       <div class="quick-actions">
-        <h2>快速操作</h2>
-        <el-space wrap>
-          <router-link to="/products">
-            <el-button type="primary" size="large">浏览商品</el-button>
-          </router-link>
-          <el-button size="large" @click="handleLogout">退出登录</el-button>
-        </el-space>
+        <h2 class="section-title">⚡ 快捷操作</h2>
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-card shadow="hover" class="action-card" @click="$router.push('/products')">
+              <div class="action-icon">🛒</div>
+              <div class="action-text">浏览商品</div>
+            </el-card>
+          </el-col>
+
+          <el-col :span="6">
+            <el-card shadow="hover" class="action-card" @click="$router.push('/dashboard')">
+              <div class="action-icon">📊</div>
+              <div class="action-text">数据统计</div>
+            </el-card>
+          </el-col>
+
+          <el-col :span="6">
+            <el-card shadow="hover" class="action-card" @click="$router.push('/notifications')">
+              <div class="action-icon">🔔</div>
+              <div class="action-text">消息通知</div>
+            </el-card>
+          </el-col>
+
+          <el-col :span="6">
+            <el-card shadow="hover" class="action-card" @click="$router.push('/profile')">
+              <div class="action-icon">👤</div>
+              <div class="action-text">个人中心</div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- 功能特性 -->
+      <div class="features-section">
+        <h2 class="section-title">✨ 核心功能</h2>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-card class="feature-card">
+              <div class="feature-icon">🕷️</div>
+              <h3>自动爬虫</h3>
+              <p>支持京东/淘宝/拼多多三大平台，自动抓取商品价格</p>
+            </el-card>
+          </el-col>
+
+          <el-col :span="8">
+            <el-card class="feature-card">
+              <div class="feature-icon">⏰</div>
+              <h3>定时更新</h3>
+              <p>每 30 分钟自动更新价格</p>
+            </el-card>
+          </el-col>
+
+          <el-col :span="8">
+            <el-card class="feature-card">
+              <div class="feature-icon">🔔</div>
+              <h3>实时通知</h3>
+              <p>价格下降立即进行站内通知</p>
+            </el-card>
+          </el-col>
+        </el-row>
       </div>
     </div>
-  </div>
   </MainLayout>
 </template>
 
-<script setup>import MainLayout from '@/components/layout/MainLayout.vue'
-import { useRouter } from 'vue-router'
+<script setup>
+import MainLayout from '@/components/layout/MainLayout.vue'
+import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { ElMessageBox } from 'element-plus'
+import { ShoppingCart, TrendCharts, Bell, Clock } from '@element-plus/icons-vue'
+import request from '@/utils/request'
 
-const router = useRouter()
 const userStore = useUserStore()
 
-const handleLogout = async () => {
-  try {
-    await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
+const stats = ref({
+  productCount: 0,
+  priceDropToday: 0,
+  notificationCount: 0
+})
 
-    userStore.logout()
-    router.push('/login')
-  } catch {
-    // 取消退出
+onMounted(async () => {
+  await loadStats()
+})
+
+const loadStats = async () => {
+  try {
+    const userId = userStore.userInfo?.id || 1
+
+    // 获取商品总数
+    const productsRes = await request.get('/products')
+    if (productsRes.code === 200) {
+      stats.value.productCount = productsRes.data?.length || 0
+    }
+
+    // 获取通知统计
+    const notifRes = await request.get('/dashboard/notification-stats', {
+      params: { userId }
+    })
+    if (notifRes.code === 200) {
+      stats.value.priceDropToday = notifRes.data?.todayCount || 0
+    }
+
+    // 获取未读通知数
+    const unreadRes = await request.get('/notifications/unread-count', {
+      params: { userId }
+    })
+    if (unreadRes.code === 200) {
+      stats.value.notificationCount = unreadRes.data?.count || 0
+    }
+  } catch (error) {
+    console.error('加载统计数据失败:', error)
   }
 }
 </script>
@@ -80,66 +180,131 @@ const handleLogout = async () => {
 <style scoped>
 .home-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f7fa;
+  padding: 20px;
+}
+
+.welcome-section {
+  margin-bottom: 30px;
   padding: 40px 20px;
-}
-
-.home-header {
-  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
   color: white;
-  margin-bottom: 40px;
 }
 
-.home-header h1 {
+.welcome-title {
+  font-size: 36px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.welcome-subtitle {
+  font-size: 16px;
+  text-align: center;
+  opacity: 0.9;
+  margin-bottom: 30px;
+}
+
+.stats-overview {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.stat-icon .el-icon {
+  font-size: 28px;
+  color: white;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.section-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.quick-actions {
+  margin-bottom: 30px;
+}
+
+.action-card {
+  text-align: center;
+  padding: 30px 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 12px;
+}
+
+.action-card:hover {
+  transform: translateY(-5px);
+}
+
+.action-icon {
   font-size: 48px;
   margin-bottom: 10px;
 }
 
-.home-header p {
-  font-size: 18px;
-  opacity: 0.9;
+.action-text {
+  font-size: 16px;
+  color: #666;
 }
 
-.home-content {
-  max-width: 1200px;
-  margin: 0 auto;
+.features-section {
+  margin-bottom: 30px;
 }
 
 .feature-card {
   text-align: center;
   padding: 30px 20px;
-  margin-bottom: 20px;
   border-radius: 12px;
 }
 
 .feature-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
+  font-size: 48px;
+  margin-bottom: 15px;
 }
 
 .feature-card h3 {
-  font-size: 24px;
-  color: #333;
+  font-size: 18px;
   margin-bottom: 10px;
+  color: #333;
 }
 
 .feature-card p {
+  font-size: 14px;
   color: #666;
-  margin-bottom: 20px;
   line-height: 1.6;
-}
-
-.quick-actions {
-  text-align: center;
-  margin-top: 40px;
-  padding: 30px;
-  background: white;
-  border-radius: 12px;
-}
-
-.quick-actions h2 {
-  font-size: 28px;
-  color: #333;
-  margin-bottom: 20px;
 }
 </style>

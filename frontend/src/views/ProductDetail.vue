@@ -109,22 +109,47 @@ const goBack = () => {
 }
 
 const handleFollow = async () => {
+  console.log('=== [商品详情] 点击关注按钮 ===')
+  console.log('当前商品 ID:', route.params.id)
+
   try {
-    await followProduct(route.params.id, { alertThreshold: 0.1 })
+    console.log('准备调用 followProduct API...')
+    const result = await followProduct(route.params.id, { alertThreshold: 0.1 })
+    console.log('followProduct 返回结果:', result)
+
     ElMessage.success('关注成功')
     isFollowed.value = true
+
+    // 刷新 Profile 页面的数据（如果有父组件通信）
+    console.log('关注成功，提示用户刷新个人中心查看')
   } catch (error) {
-    console.error('关注失败:', error)
+    console.error('=== [商品详情] 关注失败 ===')
+    console.error('错误对象:', error)
+    console.error('错误响应:', error.response)
+    console.error('错误消息:', error.response?.data?.message || error.message)
+
+    ElMessage.error(`关注失败：${error.response?.data?.message || error.message}`)
   }
 }
 
 const handleUnfollow = async () => {
+  console.log('=== [商品详情] 点击取消关注按钮 ===')
+  console.log('当前商品 ID:', route.params.id)
+
   try {
-    await unfollowProduct(route.params.id)
+    console.log('准备调用 unfollowProduct API...')
+    const result = await unfollowProduct(route.params.id)
+    console.log('unfollowProduct 返回结果:', result)
+
     ElMessage.success('已取消关注')
     isFollowed.value = false
   } catch (error) {
-    console.error('取消关注失败:', error)
+    console.error('=== [商品详情] 取消关注失败 ===')
+    console.error('错误对象:', error)
+    console.error('错误响应:', error.response)
+    console.error('错误消息:', error.response?.data?.message || error.message)
+
+    ElMessage.error(`取消关注失败：${error.response?.data?.message || error.message}`)
   }
 }
 

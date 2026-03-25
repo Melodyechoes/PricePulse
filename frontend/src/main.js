@@ -27,4 +27,10 @@ app.use(pinia)
 app.use(router)
 app.use(ElementPlus)
 
+// 初始化用户信息（从 localStorage 恢复）
+import { useUserStore } from '@/stores/user'
+const userStore = useUserStore(pinia)
+userStore.initUserInfo()
+
+
 app.mount('#app')

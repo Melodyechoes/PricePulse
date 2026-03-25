@@ -1,11 +1,14 @@
 package com.pricepulse.backend.controller;
 
+import com.pricepulse.backend.common.entity.PriceHistory;
 import com.pricepulse.backend.common.response.Result;
 import com.pricepulse.backend.common.entity.Product;
+import com.pricepulse.backend.service.PriceHistoryService;
 import com.pricepulse.backend.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
@@ -20,6 +23,8 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private PriceHistoryService priceHistoryService;
     /**
      * 添加商品
      */
@@ -195,6 +200,22 @@ public class ProductController {
             return Result.success(products);
         } catch (Exception e) {
             log.error("按价格范围查询商品失败", e);
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取商品的价格历史记录
+     */
+    @GetMapping("/{productId}/price-history")
+    public Result<List<PriceHistory>> getPriceHistory(@PathVariable Long productId) {
+        try {
+            log.info("获取商品价格历史，productId: {}", productId);
+            List<PriceHistory> history = priceHistoryService.getPriceHistory(productId);
+            log.info("价格历史数据数量：{}", history.size());
+            return Result.success(history);
+        } catch (Exception e) {
+            log.error("获取价格历史失败，productId: {}", productId, e);
             return Result.error(e.getMessage());
         }
     }

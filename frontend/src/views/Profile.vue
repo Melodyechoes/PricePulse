@@ -90,6 +90,8 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { getUserFollowedProducts, unfollowProduct as unfollowProductApi } from '@/api/products'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { getCurrentUser } from '@/api/auth'
+
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -105,52 +107,139 @@ const loading = ref(false)
 
 onMounted(async () => {
   // 加载用户信息
-  if (userStore.userInfo) {
-    userInfo.value = {
-      id: userStore.userInfo.id,
-      username: userStore.userInfo.username,
-      createdAt: new Date(userStore.userInfo.createdAt || Date.now()).toLocaleString('zh-CN')
-    }
-  }
+  await loadUserInfo()
 
   // 加载关注列表
   await loadFollowedList()
+
+  console.log('用户信息加载完成:', userInfo.value)
 })
 
+const loadUserInfo = async () => {
+  console.log('开始加载用户信息')
+  console.log('userStore.userInfo:', userStore.userInfo)
+  console.log('localStorage userInfo:', localStorage.getItem('userInfo'))
+
+  if (userStore.userInfo && userStore.userInfo.id) {
+    userInfo.value = {
+      id: userStore.userInfo.id || '',
+      username: userStore.userInfo.username || '',
+      createdAt: userStore.userInfo.createdAt
+          ? new Date(userStore.userInfo.createdAt).toLocaleString('zh-CN')
+          : '未知'
+    }
+  } else {
+    // 如果 store 中没有，尝试从 localStorage 获取
+    const savedUser = localStorage.getItem('userInfo')
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser)
+        userInfo.value = {
+          id: userData.id || '',
+          username: userData.username || '',
+          createdAt: userData.createdAt
+              ? new Date(userData.createdAt).toLocaleString('zh-CN')
+              : '未知'
+        }
+      } catch (e) {
+        console.error('解析用户信息失败:', e)
+      }
+    } else {
+      // 如果都没有，调用后端接口获取
+      try {
+        const res = await getCurrentUser()
+        if (res.code === 200 && res.data) {
+          userInfo.value = {
+            id: res.data.id || '',
+            username: res.data.username || '',
+            createdAt: res.data.createdAt
+                ? new Date(res.data.createdAt).toLocaleString('zh-CN')
+                : '未知'
+          }
+          // 保存到 store 和 localStorage
+          localStorage.setItem('userInfo', JSON.stringify(res.data))
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error)
+      }
+    }
+  }
+
+  console.log('最终用户信息:', userInfo.value)
+}
+
 const loadFollowedList = async () => {
+  console.log('=== [个人中心] 开始加载关注列表 ===')
+
   loading.value = true
   try {
-    const userId = userStore.userInfo?.id || 1
-    console.log('加载用户关注列表，userId:', userId)
+    // 优先从 store 获取 userId
+    let userId = userStore.userInfo?.id
+    console.log('从 userStore.userInfo 获取的 userId:', userId)
 
+    // 如果 store 没有，尝试从 localStorage 获取
+    if (!userId) {
+      const savedUser = localStorage.getItem('userInfo')
+      console.log('从 localStorage 获取的 userInfo:', savedUser)
+
+      if (savedUser) {
+        try {
+          const userData = JSON.parse(savedUser)
+          userId = userData.id
+          console.log('从 localStorage 解析出的 userId:', userId)
+        } catch (e) {
+          console.error('解析用户信息失败:', e)
+        }
+      }
+    }
+
+    // 最后回退到默认值 1
+    userId = userId || 1
+    console.log('最终使用的 userId:', userId)
+
+    console.log('准备调用 getUserFollowedProducts API...')
     const res = await getUserFollowedProducts(Number(userId))
 
-    console.log('API 返回数据:', res.data)
+    console.log('=== API 响应 ===')
+    console.log('完整响应:', res)
+    console.log('res.code:', res.code)
+    console.log('res.data:', res.data)
+    console.log('res.data 长度:', res.data?.length)
 
-    // 处理返回数据 - UserProductWithProduct 对象包含商品信息
+    // 处理返回数据
     followedList.value = (res.data || []).map(item => {
       console.log('处理单个关注项:', item)
+      console.log('- productId:', item.productId)
+      console.log('- productName:', item.productName)
+      console.log('- currentPrice:', item.productCurrentPrice)
 
       return {
         productId: Number(item.productId || item.id),
         productName: item.productName || '商品详情',
         currentPrice: item.productCurrentPrice || item.currentPrice || 0,
         image_url: item.productImageUrl || item.imageUrl || '',
-        alertThreshold: (item.priceDropThreshold || 5) / 100, // 5% 转换为 0.05
+        alertThreshold: (item.priceDropThreshold || 5) / 100,
         ...item
       }
     })
 
-    console.log('处理后的关注列表:', followedList.value)
+    console.log('=== 处理后的关注列表 ===')
+    console.log('followedList.length:', followedList.value.length)
+    console.log('followedList:', followedList.value)
   } catch (error) {
-    console.error('加载关注列表失败:', error)
+    console.error('=== [个人中心] 加载关注列表失败 ===')
+    console.error('错误对象:', error)
+    console.error('错误响应:', error.response)
+    console.error('错误消息:', error.response?.data?.message || error.message)
 
     const errorMsg = error.response?.data?.message || error.message || '加载关注列表失败'
     ElMessage.error(errorMsg)
   } finally {
     loading.value = false
+    console.log('加载状态设置为 false')
   }
 }
+
 const viewProductDetail = (row) => {
   console.log('跳转商品详情，row:', row)
 

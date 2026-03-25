@@ -80,4 +80,6 @@ export const useProductsStore = defineStore('products', () => {
         fetchProductDetail,
         clearCurrentProduct
     }
+
+
 })

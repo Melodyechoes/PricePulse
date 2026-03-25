@@ -200,3 +200,5 @@ INSERT INTO notifications (user_id, message, type, is_read, created_at, updated_
                                                                                         (1, '📉 您关注的商品【Apple iPhone 15 Pro】降价了！原价 ¥8999.00，现价 ¥7999.00，降幅 11.1%', 'PRICE_DROP', 0, NOW(), NOW()),
                                                                                         (1, '📉 您关注的商品【华为 Mate 60 Pro】降价了！原价 ¥6999.00，现价 ¥6499.00，降幅 7.1%', 'PRICE_DROP', 0, NOW(), NOW()),
                                                                                         (1, '📉 您关注的商品【小米 14 Ultra】降价了！原价 ¥5999.00，现价 ¥5499.00，降幅 8.3%', 'PRICE_DROP', 1, DATE_SUB(NOW(), INTERVAL 30 MINUTE), NOW());
+
+

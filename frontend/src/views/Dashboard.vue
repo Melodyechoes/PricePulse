@@ -78,32 +78,10 @@
           </el-card>
         </el-col>
 
-        <!-- 分类占比 -->
-        <el-col :span="8">
-          <el-card>
-            <template #header>
-              <span>📊 分类分布</span>
-            </template>
-            <div v-loading="categoryLoading" style="height: 400px;">
-              <v-chart v-if="categoryOption" :option="categoryOption" autoresize />
-            </div>
-          </el-card>
-        </el-col>
       </el-row>
 
       <!-- 新增图表行 -->
       <el-row :gutter="20" style="margin-top: 20px;">
-        <!-- 通知统计 -->
-        <el-col :span="12">
-          <el-card>
-            <template #header>
-              <span>📢 通知统计</span>
-            </template>
-            <div v-loading="notificationLoading" style="height: 300px;">
-              <v-chart v-if="notificationOption" :option="notificationOption" autoresize />
-            </div>
-          </el-card>
-        </el-col>
 
         <!-- 平台分布 -->
         <el-col :span="12">
@@ -118,77 +96,7 @@
         </el-col>
       </el-row>
 
-      <!-- 价格波动率排行 -->
-      <el-row :gutter="20" style="margin-top: 20px;">
-        <el-col :span="24">
-          <el-card>
-            <template #header>
-              <span>📊 价格波动率 Top 10</span>
-            </template>
-            <el-table :data="volatilityRanking" style="width: 100%" v-loading="volatilityLoading">
-              <el-table-column type="index" label="排名" width="60" />
-              <el-table-column prop="productName" label="商品名称" />
-              <el-table-column prop="maxPrice" label="最高价" width="100">
-                <template #default="{ row }">
-                  ¥{{ row.maxPrice }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="minPrice" label="最低价" width="100">
-                <template #default="{ row }">
-                  ¥{{ row.minPrice }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="avgPrice" label="平均价" width="100">
-                <template #default="{ row }">
-                  ¥{{ row.avgPrice }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="volatility" label="波动率" width="100">
-                <template #default="{ row }">
-                  <el-tag :type="getVolatilityType(row.volatility)">{{ row.volatility }}%</el-tag>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-card>
-        </el-col>
-      </el-row>
 
-      <!-- 降价排行榜 -->
-      <el-row :gutter="20" style="margin-top: 20px;">
-        <el-col :span="24">
-          <el-card>
-            <template #header>
-              <span>🔥 降价排行榜 Top 10</span>
-            </template>
-            <el-table :data="priceDropRanking" style="width: 100%" v-loading="rankingLoading">
-              <el-table-column type="index" label="排名" width="60" />
-              <el-table-column prop="productName" label="商品名称" />
-              <el-table-column prop="originalPrice" label="原价" width="100">
-                <template #default="{ row }">
-                  ¥{{ row.originalPrice }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="currentPrice" label="现价" width="100">
-                <template #default="{ row }">
-                  ¥{{ row.currentPrice }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="dropPercent" label="降幅" width="100">
-                <template #default="{ row }">
-                  <el-tag type="danger">{{ row.dropPercent }}%</el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" width="100">
-                <template #default="{ row }">
-                  <el-button size="small" @click="viewProduct(row.productId)">
-                    查看详情
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-card>
-        </el-col>
-      </el-row>
     </div>
   </MainLayout>
 </template>
@@ -196,7 +104,6 @@
 <script setup>
 import MainLayout from '@/components/layout/MainLayout.vue'
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { TrendCharts, Money, BellFilled } from '@element-plus/icons-vue'
 import { use } from 'echarts/core'
@@ -209,7 +116,6 @@ import request from '@/utils/request'
 
 use([CanvasRenderer, LineChart, PieChart, BarChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent])
 
-const router = useRouter()
 const userStore = useUserStore()
 
 // 统计数据
@@ -278,6 +184,10 @@ const loadPriceTrend = async () => {
   trendLoading.value = true
   try {
     const userId = userStore.userInfo?.id || 1
+    console.log('=== [Dashboard] 加载价格趋势 ===')
+    console.log('userId:', userId)
+    console.log('trendPeriod:', trendPeriod.value)
+
     const res = await request.get('/dashboard/price-trend', {
       params: {
         userId,
@@ -285,16 +195,35 @@ const loadPriceTrend = async () => {
       }
     })
 
+    console.log('价格趋势 API 响应:', res)
+    console.log('价格趋势 data:', res.data)
+
     if (res.code === 200) {
       const data = res.data || []
+      console.log('=== 价格趋势数据详情 ===')
+      console.log('完整数据数组:', data)
+      console.log('数据长度:', data.length)
+
+      if (data.length > 0) {
+        console.log('第一个数据项的完整内容:', JSON.stringify(data[0], null, 2))
+        console.log('第一个数据项的所有键名:', Object.keys(data[0]))
+        console.log('第一个数据项的 date 字段值:', data[0].date)
+        console.log('第一个数据项的 price 字段值:', data[0].price)
+        console.log('第一个数据项的 avgPrice 字段值:', data[0].avgPrice)
+        console.log('第一个数据项的 averagePrice 字段值:', data[0].averagePrice)
+      }
 
       if (data.length === 0) {
+        console.warn('价格趋势数据为空，不显示图表')
         trendOption.value = null
         return
       }
 
       const dates = data.map(item => item.date)
-      const prices = data.map(item => item.price)
+      const prices = data.map(item => item.avgPrice)
+
+      console.log('dates:', dates)
+      console.log('prices:', prices)
 
       trendOption.value = {
         title: {
@@ -348,6 +277,7 @@ const loadPriceTrend = async () => {
           }
         }]
       }
+      console.log('图表配置已设置')
     }
   } catch (error) {
     console.error('加载价格趋势失败:', error)
@@ -355,24 +285,31 @@ const loadPriceTrend = async () => {
     trendLoading.value = false
   }
 }
+
+
 // 加载分类分布
 const loadCategoryDistribution = async () => {
   categoryLoading.value = true
   try {
     const userId = userStore.userInfo?.id || 1
+    console.log('=== [Dashboard] 加载分类分布 ===')
+    console.log('userId:', userId)
+
     const res = await request.get('/dashboard/category-distribution', {
       params: { userId }
     })
 
     console.log('=== 分类分布 API 响应 ===')
-    console.log('响应数据:', res.data)
+    console.log('完整响应:', res)
+    console.log('响应 data:', res.data)
 
     if (res.code === 200) {
       const categories = res.data || []
-
       console.log('分类数据:', categories)
+      console.log('分类数量:', categories.length)
 
       if (categories.length === 0) {
+        console.warn('分类数据为空，不显示图表')
         categoryOption.value = null
         return
       }
@@ -412,6 +349,7 @@ const loadCategoryDistribution = async () => {
           }
         }]
       }
+      console.log('分类图表配置已设置')
     }
   } catch (error) {
     console.error('加载分类分布失败:', error)
@@ -420,6 +358,7 @@ const loadCategoryDistribution = async () => {
     categoryLoading.value = false
   }
 }
+
 // 加载降价排行榜
 const loadPriceDropRanking = async () => {
   rankingLoading.value = true
@@ -442,9 +381,6 @@ const loadPriceDropRanking = async () => {
   }
 }
 
-const viewProduct = (productId) => {
-  router.push(`/product/${productId}`)
-}
 
 // 加载通知统计
 const loadNotificationStats = async () => {
@@ -595,12 +531,6 @@ const loadVolatilityRanking = async () => {
   }
 }
 
-// 获取波动率标签类型
-const getVolatilityType = (volatility) => {
-  if (volatility >= 20) return 'danger'
-  if (volatility >= 10) return 'warning'
-  return 'success'
-}
 </script>
 
 <style scoped>

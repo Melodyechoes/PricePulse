@@ -265,5 +265,12 @@ public interface ProductMapper {
      */
     @Select("SELECT DISTINCT platform FROM products WHERE status = 1 AND platform IS NOT NULL ORDER BY platform")
     List<String> selectAllPlatforms();
+
+    /**
+     * 根据商品 ID 查询关注的用户 ID 列表
+     */
+    @Select("SELECT user_id FROM user_products WHERE product_id = #{productId}")
+    List<Long> selectUserIdsByProductId(@Param("productId") Long productId);
+
 }
 

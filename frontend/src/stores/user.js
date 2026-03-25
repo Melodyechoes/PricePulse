@@ -12,8 +12,11 @@ export const useUserStore = defineStore('user', () => {
     async function loginAction(loginForm) {
         const res = await login(loginForm)
         token.value = res.data.token
-        userInfo.value = res.data.user
+        userInfo.value = res.data.userInfo || res.data.user
         localStorage.setItem('token', token.value)
+        if (userInfo.value) {
+            localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
+        }
         return res
     }
 
@@ -21,16 +24,34 @@ export const useUserStore = defineStore('user', () => {
     async function registerAction(registerForm) {
         const res = await register(registerForm)
         token.value = res.data.token
-        userInfo.value = res.data.user
+        userInfo.value = res.data.userInfo || res.data.user
         localStorage.setItem('token', token.value)
+        if (userInfo.value) {
+            localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
+        }
         return res
     }
+
 
     // 获取用户信息
     async function getUserInfoAction() {
         const res = await getCurrentUser()
         userInfo.value = res.data
+        if (userInfo.value) {
+            localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
+        }
         return res
+    }
+    // 初始化时从 localStorage 恢复用户信息
+    function initUserInfo() {
+        const savedUser = localStorage.getItem('userInfo')
+        if (savedUser && token.value) {
+            try {
+                userInfo.value = JSON.parse(savedUser)
+            } catch (e) {
+                console.error('解析用户信息失败:', e)
+            }
+        }
     }
 
     // 退出登录
@@ -38,6 +59,7 @@ export const useUserStore = defineStore('user', () => {
         token.value = ''
         userInfo.value = null
         localStorage.removeItem('token')
+        localStorage.removeItem('userInfo')
     }
 
     return {
@@ -47,6 +69,7 @@ export const useUserStore = defineStore('user', () => {
         loginAction,
         registerAction,
         getUserInfoAction,
-        logout
+        logout,
+        initUserInfo
     }
 })

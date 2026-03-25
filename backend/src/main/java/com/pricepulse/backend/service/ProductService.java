@@ -2,7 +2,9 @@ package com.pricepulse.backend.service;
 
 import com.pricepulse.backend.common.entity.Product;
 import com.pricepulse.backend.common.exception.BusinessException;
+import com.pricepulse.backend.mapper.PriceHistoryMapper;
 import com.pricepulse.backend.mapper.ProductMapper;
+import com.pricepulse.backend.service.crawler.CrawlerStrategyFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,15 @@ public class ProductService {
 
     @Autowired
     private ProductMapper productMapper;
+
+    @Autowired
+    private PriceHistoryMapper priceHistoryMapper;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private CrawlerStrategyFactory crawlerFactory;
 
     /**
      * 添加商品
@@ -188,6 +200,7 @@ public class ProductService {
             throw new BusinessException("商品价格必须大于 0");
         }
     }
+
     /**
      * 根据关键词搜索商品
      */
@@ -197,6 +210,7 @@ public class ProductService {
         }
         return productMapper.searchByKeyword(keyword);
     }
+
 
     /**
      * 多条件组合搜索
@@ -224,7 +238,6 @@ public class ProductService {
         );
     }
 
-
     /**
      * 获取所有可用的筛选条件
      */
@@ -242,5 +255,165 @@ public class ProductService {
         return filters;
     }
 
+    /**
+     * 更新所有商品价格（定时任务）
+     */
+    public int updateAllProductsPrice() {
+        List<Product> allProducts = productMapper.selectAll();
+        int updatedCount = 0;
 
+        for (Product product : allProducts) {
+            try {
+                // 使用真实爬虫获取价格
+                BigDecimal newPrice = crawlRealPrice(product);
+
+                if (newPrice != null && !newPrice.equals(product.getCurrentPrice())) {
+                    // 检查是否降价
+                    boolean isPriceDrop = newPrice.compareTo(product.getCurrentPrice()) < 0;
+
+                    // 更新商品价格
+                    product.setCurrentPrice(newPrice);
+                    int result = productMapper.update(product);
+
+                    if (result > 0) {
+                        updatedCount++;
+
+                        // 记录价格历史
+                        recordPriceHistory(product);
+
+                        // 如果降价，发送通知
+                        if (isPriceDrop) {
+                            sendPriceDropNotifications(product);
+                        }
+
+                        log.info("商品 {} 价格更新：{} -> {}", product.getName(),
+                                product.getCurrentPrice(), newPrice);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("更新商品 {} 价格失败", product.getName(), e);
+            }
+        }
+
+        return updatedCount;
+    }
+
+
+    /**
+     * 深度更新所有商品（每日执行）
+     */
+    public int deepUpdateAllProducts() {
+        List<Product> allProducts = productMapper.selectAll();
+        int updatedCount = 0;
+
+        for (Product product : allProducts) {
+            try {
+                // 使用真实爬虫获取价格
+                BigDecimal newPrice = crawlRealPrice(product);
+                Integer newSalesCount = simulateSalesUpdate(product.getSalesCount());
+
+                if (newPrice != null) {
+                    product.setCurrentPrice(newPrice);
+                    product.setSalesCount(newSalesCount);
+                    product.setLastChecked(LocalDateTime.now());
+
+                    int result = productMapper.update(product);
+
+                    if (result > 0) {
+                        updatedCount++;
+                        recordPriceHistory(product);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("深度更新商品 {} 失败", product.getName(), e);
+            }
+        }
+
+        return updatedCount;
+    }
+
+    /**
+     * 爬取真实商品价格
+     */
+    private BigDecimal crawlRealPrice(Product product) {
+        try {
+            String url = product.getUrl();
+            if (url == null || url.isEmpty()) {
+                log.warn("商品 {} 缺少 URL，跳过", product.getName());
+                return product.getCurrentPrice();
+            }
+
+            // 获取对应的爬虫服务
+            com.pricepulse.backend.service.crawler.CrawlerService crawler =
+                    crawlerFactory.getCrawler(url);
+
+            // 爬取价格
+            com.pricepulse.backend.common.dto.PriceInfo priceInfo = crawler.crawlPrice(url);
+
+            if (priceInfo != null && priceInfo.getCurrentPrice() != null) {
+                log.info("成功爬取商品 {} 价格：{}", product.getName(), priceInfo.getCurrentPrice());
+                return priceInfo.getCurrentPrice();
+            } else {
+                log.warn("爬取商品 {} 价格失败，返回空值", product.getName());
+                return product.getCurrentPrice();
+            }
+        } catch (Exception e) {
+            log.error("爬取商品 {} 价格异常", product.getName(), e);
+            return product.getCurrentPrice();
+        }
+    }
+
+    /**
+     * 记录价格历史
+     */
+    private void recordPriceHistory(Product product) {
+        try {
+            com.pricepulse.backend.common.entity.PriceHistory history =
+                    new com.pricepulse.backend.common.entity.PriceHistory();
+            history.setProductId(product.getId());
+            history.setPrice(product.getCurrentPrice());
+            history.setOriginalPrice(product.getOriginalPrice());
+            history.setDiscountRate(product.getDiscountRate());
+            history.setCurrency("CNY");
+            history.setCheckedAt(LocalDateTime.now());
+            history.setSource("SCHEDULER");
+
+            priceHistoryMapper.insert(history);
+        } catch (Exception e) {
+            log.error("记录价格历史失败", e);
+        }
+    }
+
+    /**
+     * 发送降价通知
+     */
+    private void sendPriceDropNotifications(Product product) {
+        try {
+            // 获取关注该商品的所有用户
+            List<Long> userIds = productMapper.selectUserIdsByProductId(product.getId());
+
+            for (Long userId : userIds) {
+                notificationService.sendPriceDropNotification(
+                        userId,
+                        product.getName(),
+                        product.getOriginalPrice() != null ? product.getOriginalPrice() : product.getCurrentPrice(),
+                        product.getCurrentPrice()
+                );
+            }
+        } catch (Exception e) {
+            log.error("发送降价通知失败", e);
+        }
+    }
+
+    /**
+     * 模拟销量更新
+     */
+    private Integer simulateSalesUpdate(Integer currentSales) {
+        if (currentSales == null) return 0;
+        // 模拟销量增长
+        int increase = (int) (Math.random() * 100);
+        return currentSales + increase;
+
+
+    }
 }
