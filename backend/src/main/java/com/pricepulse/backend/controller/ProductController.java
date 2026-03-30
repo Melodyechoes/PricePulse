@@ -8,12 +8,13 @@ import com.pricepulse.backend.common.entity.Product;
 import com.pricepulse.backend.service.PriceHistoryService;
 import com.pricepulse.backend.service.ProductService;
 import com.pricepulse.backend.service.crawler.CrawlerService;
+import com.pricepulse.backend.service.NotificationService;
+import com.pricepulse.backend.mapper.UserProductMapper;
+import com.pricepulse.backend.common.entity.UserProduct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.pricepulse.backend.service.crawler.CrawlerStrategyFactory;
-
-
 
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
@@ -34,7 +35,11 @@ public class ProductController {
     @Autowired
     private CrawlerStrategyFactory crawlerFactory;
 
+    @Autowired
+    private NotificationService notificationService;
 
+    @Autowired
+    private UserProductMapper userProductMapper;
 
     /**
      * 根据 URL 解析商品信息
@@ -121,7 +126,7 @@ public class ProductController {
 
 
     /**
-     * 根据ID查询商品
+     * 根据 ID 查询商品
      */
     @GetMapping("/{id}")
     public Result<Product> getProductById(@PathVariable Long id) {
@@ -261,7 +266,7 @@ public class ProductController {
             List<Product> products = productService.getProductsByCategory(category);
             return Result.success(products);
         } catch (Exception e) {
-            log.error("按分类查询商品失败，分类: {}", category, e);
+            log.error("按分类查询商品失败，分类：{}", category, e);
             return Result.error(e.getMessage());
         }
     }
@@ -275,7 +280,7 @@ public class ProductController {
             List<Product> products = productService.getProductsByBrand(brand);
             return Result.success(products);
         } catch (Exception e) {
-            log.error("按品牌查询商品失败，品牌: {}", brand, e);
+            log.error("按品牌查询商品失败，品牌：{}", brand, e);
             return Result.error(e.getMessage());
         }
     }
@@ -325,34 +330,73 @@ public class ProductController {
                 return Result.error("商品不存在");
             }
 
-            // 【演示模式】生成模拟价格变化
-            BigDecimal basePrice = product.getOriginalPrice() != null ?
-                    product.getOriginalPrice() :
-                    (product.getCurrentPrice() != null ? product.getCurrentPrice() : new BigDecimal("1000"));
+            // 【修改】获取基准价格：使用当前价格作为基准
+            BigDecimal currentPrice = product.getCurrentPrice();
+            if (currentPrice == null) {
+                currentPrice = product.getOriginalPrice();
+            }
+            if (currentPrice == null) {
+                currentPrice = new BigDecimal("1000");
+            }
 
-            // 随机降价 5%-15%
-            double randomFactor = 0.85 + Math.random() * 0.15;
-            BigDecimal newPrice = basePrice.multiply(new BigDecimal(String.valueOf(randomFactor)))
+            log.info("基准价格：当前价={}, 原价={}",
+                    product.getCurrentPrice(), product.getOriginalPrice());
+
+            // 【修改】随机降价 5%-20%（确保每次都降价）
+            double randomFactor = 0.80 + Math.random() * 0.20;
+
+            // 确保随机因子小于 1（保证降价）
+            if (randomFactor >= 1.0) {
+                randomFactor = 0.95;
+            }
+
+            BigDecimal newPrice = currentPrice.multiply(new BigDecimal(String.valueOf(randomFactor)))
                     .setScale(2, BigDecimal.ROUND_HALF_UP);
 
-            BigDecimal discountRate = newPrice.divide(basePrice, 4, BigDecimal.ROUND_HALF_UP)
+            // 【新增】二次检查：确保新价格一定低于当前价格
+            if (newPrice.compareTo(currentPrice) >= 0) {
+                // 如果新价格大于或等于当前价格，强制降价 10%
+                newPrice = currentPrice.multiply(new BigDecimal("0.9"))
+                        .setScale(2, BigDecimal.ROUND_HALF_UP);
+                log.info("检测到价格未下降，强制降价 10%");
+            }
+
+            BigDecimal discountRate = newPrice.divide(currentPrice, 4, BigDecimal.ROUND_HALF_UP)
                     .multiply(new BigDecimal("100"))
                     .setScale(2, BigDecimal.ROUND_HALF_UP);
 
             log.info("【演示模式】价格更新：原价 {} -> 新价 {}, 折扣率 {}%",
-                    basePrice, newPrice, discountRate);
+                    currentPrice, newPrice, discountRate);
+
+            // 【修改】检查是否降价并发送通知（与当前价格比较）
+            BigDecimal oldPrice = product.getCurrentPrice();
+
+            log.info("=== [降价通知] 开始检查 ===");
+            log.info("商品 ID: {}, 商品名称：{}", product.getId(), product.getName());
+            log.info("当前价格：{}, 新价格：{}", oldPrice, newPrice);
+            log.info("是否降价：{}", (oldPrice != null && newPrice.compareTo(oldPrice) < 0));
 
             // 直接更新价格相关字段
             product.setCurrentPrice(newPrice);
-            product.setOriginalPrice(basePrice);
+            product.setOriginalPrice(currentPrice); // 保持原价为之前的价格
             product.setDiscountRate(discountRate);
+
+            // 【新增】如果降价了，触发通知
+            if (oldPrice != null && newPrice.compareTo(oldPrice) < 0) {
+                log.info("检测到降价：商品 {} 从 {} 降到 {}", product.getName(), oldPrice, newPrice);
+
+                // 触发降价通知
+                triggerPriceDropNotification(product, oldPrice, newPrice);
+            } else {
+                log.warn("价格未下降或 oldPrice 为 null，跳过通知");
+            }
 
             // 记录价格历史
             PriceHistory history = new PriceHistory();
             history.setProductId(productId);
             history.setCheckedAt(java.time.LocalDateTime.now());
             history.setPrice(newPrice);
-            history.setOriginalPrice(basePrice);
+            history.setOriginalPrice(currentPrice);
             history.setDiscountRate(discountRate);
             history.setCurrency("CNY");
             history.setSource("manual");
@@ -367,6 +411,68 @@ public class ProductController {
         } catch (Exception e) {
             log.error("价格更新失败，productId: {}", productId, e);
             return Result.error("更新失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 触发降价通知
+     */
+    private void triggerPriceDropNotification(Product product, BigDecimal oldPrice, BigDecimal newPrice) {
+        try {
+            log.info("=== [降价通知] 准备发送通知 ===");
+            log.info("商品 ID: {}, 商品名称：{}", product.getId(), product.getName());
+            log.info("商品原价：{}, 商品现价：{}", oldPrice, newPrice);
+
+            // 获取关注该商品的所有用户
+            var userProducts = userProductMapper.selectByProductId(product.getId());
+
+            log.info("查询到的关注用户数量：{}", userProducts == null ? 0 : userProducts.size());
+            if (userProducts != null) {
+                for (var up : userProducts) {
+                    log.info("  - 用户 ID: {}, 阈值：{}", up.getUserId(), up.getPriceDropThreshold());
+                }
+            }
+
+            if (userProducts == null || userProducts.isEmpty()) {
+                log.debug("商品 {} 暂无关注用户，跳过通知", product.getName());
+                return;
+            }
+
+            log.info("商品 {} 有 {} 个用户关注，准备发送通知", product.getName(), userProducts.size());
+
+            for (var userProduct : userProducts) {
+                // 检查是否达到提醒阈值
+                BigDecimal alertThreshold = userProduct.getPriceDropThreshold();
+                if (alertThreshold == null) {
+                    alertThreshold = new BigDecimal("0.1"); // 默认 10%
+                }
+
+                // 计算降价幅度
+                BigDecimal dropAmount = oldPrice.subtract(newPrice);
+                BigDecimal dropPercent = dropAmount.divide(oldPrice, 4, java.math.BigDecimal.ROUND_HALF_UP)
+                        .multiply(new BigDecimal("100"));
+
+                log.info("用户 {} 关注商品 {}，降价幅度 {}%，阈值 {}%",
+                        userProduct.getUserId(), product.getName(), dropPercent, alertThreshold.multiply(new BigDecimal("100")));
+
+                // 【修复】如果降价幅度达到阈值，发送通知
+                // alertThreshold 是小数形式（如 0.1 表示 10%），dropPercent 是百分比形式（如 12.1 表示 12.1%）
+                if (dropPercent.compareTo(alertThreshold.multiply(new BigDecimal("100"))) >= 0) {
+                    log.info("✅ 用户 {} 达到通知条件，发送通知...", userProduct.getUserId());
+
+                    notificationService.sendPriceDropNotification(
+                            userProduct.getUserId(),
+                            product.getName(),
+                            oldPrice,
+                            newPrice
+                    );
+                    log.info("已为用户 {} 发送降价通知", userProduct.getUserId());
+                } else {
+                    log.debug("降价幅度未达到用户 {} 的提醒阈值", userProduct.getUserId());
+                }
+            }
+        } catch (Exception e) {
+            log.error("触发降价通知失败", e);
         }
     }
 }

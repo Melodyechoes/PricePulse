@@ -8,7 +8,7 @@
 
       <!-- 统计卡片 -->
       <el-row :gutter="20" class="stats-cards">
-        <el-col :span="6">
+        <el-col :span="8">
           <el-card shadow="hover" class="stat-card">
             <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
               <el-icon><shopping-cart /></el-icon>
@@ -20,7 +20,7 @@
           </el-card>
         </el-col>
 
-        <el-col :span="6">
+        <el-col :span="8">
           <el-card shadow="hover" class="stat-card">
             <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
               <el-icon><trend-charts /></el-icon>
@@ -32,19 +32,7 @@
           </el-card>
         </el-col>
 
-        <el-col :span="6">
-          <el-card shadow="hover" class="stat-card">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
-              <el-icon><money /></el-icon>
-            </div>
-            <div class="stat-content">
-              <div class="stat-value">¥{{ stats.savedAmount }}</div>
-              <div class="stat-label">预计省钱</div>
-            </div>
-          </el-card>
-        </el-col>
-
-        <el-col :span="6">
+        <el-col :span="8">
           <el-card shadow="hover" class="stat-card">
             <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
               <el-icon><bell-filled /></el-icon>
@@ -61,19 +49,35 @@
       <el-row :gutter="20">
         <!-- 价格趋势图 -->
         <el-col :span="16">
-          <el-card>
-            <template #header>
-              <div class="card-header">
-                <span>📈 价格趋势</span>
-                <el-radio-group v-model="trendPeriod" size="small" @change="loadPriceTrend">
-                  <el-radio-button label="7 天" value="7" />
-                  <el-radio-button label="30 天" value="30" />
-                  <el-radio-button label="90 天" value="90" />
-                </el-radio-group>
+          <el-card class="stat-card trend-card">
+            <div class="card-header">
+              <h3>📈 价格趋势</h3>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <el-select
+                    v-model="selectedProductId"
+                    placeholder="选择商品"
+                    size="small"
+                    @change="loadPriceTrend"
+                    style="width: 200px;"
+                    clearable
+                >
+                  <el-option
+                      v-for="product in followedProducts"
+                      :key="product.productId"
+                      :label="product.productName"
+                      :value="product.productId"
+                  />
+                </el-select>
+                <el-select v-model="trendPeriod" size="small" @change="loadPriceTrend" style="width: 100px;">
+                  <el-option label="7 天" :value="7" />
+                  <el-option label="15 天" :value="15" />
+                  <el-option label="30 天" :value="30" />
+                </el-select>
               </div>
-            </template>
-            <div v-loading="trendLoading" style="height: 400px;">
+            </div>
+            <div class="chart-wrapper" v-loading="trendLoading">
               <v-chart v-if="trendOption" :option="trendOption" autoresize />
+              <el-empty v-else description="请选择要查看的商品" />
             </div>
           </el-card>
         </el-col>
@@ -105,7 +109,7 @@
 import MainLayout from '@/components/layout/MainLayout.vue'
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { TrendCharts, Money, BellFilled } from '@element-plus/icons-vue'
+import { TrendCharts, BellFilled } from '@element-plus/icons-vue'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart, PieChart, BarChart } from 'echarts/charts'
@@ -127,7 +131,9 @@ const stats = ref({
 })
 
 // 价格趋势
-const trendPeriod = ref('7')
+const trendPeriod = ref(7)
+const selectedProductId = ref(null)
+const followedProducts = ref([])
 const trendLoading = ref(false)
 const trendOption = ref(null)
 
@@ -152,9 +158,10 @@ const volatilityLoading = ref(false)
 const volatilityRanking = ref([])
 
 
+
 onMounted(async () => {
   await loadStats()
-  await loadPriceTrend()
+  await loadFollowedProducts()
   await loadCategoryDistribution()
   await loadPriceDropRanking()
   await loadNotificationStats()
@@ -179,55 +186,99 @@ const loadStats = async () => {
   }
 }
 
-// 加载价格趋势
-const loadPriceTrend = async () => {
-  trendLoading.value = true
+
+// 获取用户关注的商品列表
+const loadFollowedProducts = async () => {
   try {
     const userId = userStore.userInfo?.id || 1
-    console.log('=== [Dashboard] 加载价格趋势 ===')
-    console.log('userId:', userId)
-    console.log('trendPeriod:', trendPeriod.value)
+    const res = await request.get(`/user-products/user/${userId}`)
 
-    const res = await request.get('/dashboard/price-trend', {
-      params: {
-        userId,
-        days: parseInt(trendPeriod.value)
-      }
-    })
+    if (res.code === 200) {
+      followedProducts.value = res.data || []
+    }
+  } catch (error) {
+    console.error('加载关注商品列表失败:', error)
+  }
+}
 
-    console.log('价格趋势 API 响应:', res)
-    console.log('价格趋势 data:', res.data)
+
+// 加载价格趋势
+const loadPriceTrend = async () => {
+  // 如果没有选择商品，不加载
+  if (!selectedProductId.value) {
+    trendOption.value = null
+    return
+  }
+
+  trendLoading.value = true
+  try {
+    console.log('=== [Dashboard] 开始加载价格趋势 ===')
+    console.log('选择的 productId:', selectedProductId.value)
+    console.log('选择的天数:', trendPeriod.value)
+
+    const res = await request.get(`/products/${selectedProductId.value}/price-history`)
+
+    console.log('价格历史 API 响应:', res)
+    console.log('价格历史 data:', res.data)
 
     if (res.code === 200) {
       const data = res.data || []
-      console.log('=== 价格趋势数据详情 ===')
-      console.log('完整数据数组:', data)
+
+      console.log('=== 价格历史数据详情 ===')
       console.log('数据长度:', data.length)
 
-      if (data.length > 0) {
-        console.log('第一个数据项的完整内容:', JSON.stringify(data[0], null, 2))
-        console.log('第一个数据项的所有键名:', Object.keys(data[0]))
-        console.log('第一个数据项的 date 字段值:', data[0].date)
-        console.log('第一个数据项的 price 字段值:', data[0].price)
-        console.log('第一个数据项的 avgPrice 字段值:', data[0].avgPrice)
-        console.log('第一个数据项的 averagePrice 字段值:', data[0].averagePrice)
-      }
-
       if (data.length === 0) {
-        console.warn('价格趋势数据为空，不显示图表')
+        console.warn('价格历史数据为空')
         trendOption.value = null
         return
       }
 
-      const dates = data.map(item => item.date)
-      const prices = data.map(item => item.avgPrice)
+      // 按日期排序
+      const sortedData = data.sort((a, b) =>
+          new Date(a.checkedAt).getTime() - new Date(b.checkedAt).getTime()
+      )
+
+      // 【新增】根据选择的天数过滤数据
+      const now = new Date()
+      const daysToKeep = parseInt(trendPeriod.value)
+      const startDate = new Date()
+      startDate.setDate(now.getDate() - daysToKeep)
+
+      console.log(`过滤前数据量：${sortedData.length}`)
+      console.log(`起始日期：${startDate.toISOString()}`)
+
+      const filteredData = sortedData.filter(item => {
+        const itemDate = new Date(item.checkedAt)
+        return itemDate >= startDate
+      })
+
+      console.log(`过滤后数据量：${filteredData.length}`)
+
+      if (filteredData.length === 0) {
+        console.warn('过滤后数据为空')
+        trendOption.value = null
+        return
+      }
+
+      const dates = filteredData.map(item => {
+        const date = new Date(item.checkedAt)
+        return `${date.getMonth() + 1}/${date.getDate()}`
+      })
+
+      const prices = filteredData.map(item => item.price)
 
       console.log('dates:', dates)
       console.log('prices:', prices)
 
+      // 获取商品信息
+      const product = followedProducts.value.find(p => p.productId === selectedProductId.value)
+      const productName = product ? product.productName : '未知商品'
+
+      console.log('商品名称:', productName)
+
       trendOption.value = {
         title: {
-          text: '关注商品平均价格走势',
+          text: `${productName} 价格走势（近${daysToKeep}天）`,
           left: 'center',
           textStyle: {
             fontSize: 16,
@@ -236,37 +287,73 @@ const loadPriceTrend = async () => {
         },
         tooltip: {
           trigger: 'axis',
-          formatter: '{b}<br />平均价格：¥{c}'
+          formatter: (params) => {
+            const param = params[0]
+            return `
+              <div style="padding: 8px;">
+                <div style="font-weight: bold; margin-bottom: 6px;">${param.name}</div>
+                <div style="color: #f56c6c; font-size: 18px; font-weight: bold;">¥${param.value}</div>
+              </div>
+            `
+          }
         },
         grid: {
           left: '3%',
           right: '4%',
           bottom: '3%',
+          top: '12%',
           containLabel: true
         },
         xAxis: {
           type: 'category',
           data: dates,
           axisLabel: {
-            rotate: 45
+            rotate: 45,
+            margin: 20
           }
         },
         yAxis: {
           type: 'value',
           name: '价格 (元)',
+          nameTextStyle: {
+            fontSize: 12,
+            color: '#666'
+          },
           axisLabel: {
-            formatter: '¥{value}'
+            formatter: '¥{value}',
+            margin: 15
+          },
+          splitLine: {
+            lineStyle: {
+              color: '#e6e6e6',
+              type: 'dashed'
+            }
           }
         },
         series: [{
           data: prices,
           type: 'line',
           smooth: true,
+          symbol: 'circle',
+          symbolSize: 8,
           areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: 'rgba(64, 158, 255, 0.3)' },
-              { offset: 1, color: 'rgba(64, 158, 255, 0.05)' }
-            ])
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                {
+                  offset: 0,
+                  color: 'rgba(64, 158, 255, 0.3)'
+                },
+                {
+                  offset: 1,
+                  color: 'rgba(64, 158, 255, 0.05)'
+                }
+              ]
+            }
           },
           lineStyle: {
             color: '#409EFF',
@@ -277,6 +364,7 @@ const loadPriceTrend = async () => {
           }
         }]
       }
+
       console.log('图表配置已设置')
     }
   } catch (error) {
@@ -334,7 +422,7 @@ const loadCategoryDistribution = async () => {
         },
         series: [{
           type: 'pie',
-          radius: ['40%', '70%'],
+          radius: ['35%', '65%'],
           center: ['55%', '50%'],
           data: categories,
           emphasis: {
@@ -345,7 +433,13 @@ const loadCategoryDistribution = async () => {
             }
           },
           label: {
-            formatter: '{b}: {d}%'
+            formatter: '{b}: {d}%',
+            fontSize: 12
+          },
+          avoidLabelOverlap: true,
+          labelLine: {
+            length: 10,
+            length2: 10
           }
         }]
       }
@@ -486,7 +580,7 @@ const loadPlatformDistribution = async () => {
         },
         series: [{
           type: 'pie',
-          radius: ['40%', '70%'],
+          radius: ['35%', '65%'],
           center: ['55%', '50%'],
           data: platforms,
           emphasis: {
@@ -497,7 +591,13 @@ const loadPlatformDistribution = async () => {
             }
           },
           label: {
-            formatter: '{b}: {d}%'
+            formatter: '{b}: {d}%',
+            fontSize: 12
+          },
+          avoidLabelOverlap: true,
+          labelLine: {
+            length: 10,
+            length2: 10
           }
         }]
       }
@@ -603,5 +703,9 @@ const loadVolatilityRanking = async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.chart-wrapper {
+  height: 400px;
 }
 </style>

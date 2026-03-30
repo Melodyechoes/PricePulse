@@ -119,4 +119,20 @@ public class DashboardController {
             return Result.error(e.getMessage());
         }
     }
+
+    /**
+     * 获取多商品价格趋势对比
+     */
+    @GetMapping("/multi-product-trend")
+    public Result<List<Map<String, Object>>> getMultiProductPriceTrend(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "7") Integer days) {
+        try {
+            List<Map<String, Object>> trend = dashboardService.getMultiProductPriceTrend(userId, days);
+            return Result.success(trend);
+        } catch (Exception e) {
+            log.error("获取多商品价格趋势失败", e);
+            return Result.error(e.getMessage());
+        }
+    }
 }

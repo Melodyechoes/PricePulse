@@ -1,6 +1,7 @@
 package com.pricepulse.backend.mapper;
 
 import com.pricepulse.backend.common.entity.NotificationEntity;
+import com.pricepulse.backend.common.entity.Product;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
@@ -84,4 +85,33 @@ public interface NotificationMapper {
      */
     @Select("SELECT type, COUNT(*) as count FROM notifications WHERE user_id = #{userId} GROUP BY type")
     List<Map<String, Object>> countByType(Long userId);
+
+    // ... existing code ...
+
+
+    /**
+     * 统计用户的通知总数（包含已读和未读）
+     */
+    @Select("SELECT COUNT(*) FROM notifications WHERE user_id = #{userId}")
+    int countByUserId(Long userId);
+
+    /**
+     * 更新商品信息
+     */
+    @Update("UPDATE products SET name = #{name}, url = #{url}, image_url = #{imageUrl}, " +
+            "platform = #{platform}, platform_id = #{platformId}, brand = #{brand}, category = #{category}, " +
+            "current_price = #{currentPrice}, original_price = #{originalPrice}, discount_rate = #{discountRate}, " +
+            "sales_count = #{salesCount}, rating = #{rating}, review_count = #{reviewCount}, " +
+            "stock_status = #{stockStatus}, last_checked = NOW(), updated_at = NOW() " +
+            "WHERE id = #{id}")
+    int update(Product product);
+
+    /**
+     * 根据 ID 更新商品（简化版，只更新价格相关字段）
+     */
+    @Update("UPDATE products SET current_price = #{currentPrice}, original_price = #{originalPrice}, " +
+            "discount_rate = #{discountRate}, updated_at = NOW() WHERE id = #{id}")
+    int updateById(Product product);
+
+
 }

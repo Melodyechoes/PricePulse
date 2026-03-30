@@ -52,4 +52,19 @@ public class PriceHistorySqlProvider {
             LIMIT(String.valueOf(limit));
         }}.toString();
     }
+
+    public String getDailyPricesByProducts(List<Long> productIds, LocalDateTime startDate) {
+        String ids = String.join(",", productIds.stream().map(String::valueOf).toArray(String[]::new));
+
+        return new SQL() {{
+            SELECT("ph.product_id, p.name as product_name, DATE(ph.checked_at) as date, ph.price");
+            FROM("price_history ph");
+            FROM("products p");
+            WHERE("ph.product_id = p.id");
+            WHERE("ph.product_id IN (" + ids + ")");
+            WHERE("ph.checked_at >= '" + startDate + "'");
+            ORDER_BY("ph.product_id, DATE(ph.checked_at) ASC");
+        }}.toString();
+    }
+
 }

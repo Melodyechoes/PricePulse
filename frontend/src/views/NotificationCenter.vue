@@ -40,14 +40,14 @@
                     v-if="!item.isRead"
                     type="text"
                     size="small"
-                    @click="markAsRead(item.id)"
+                    @click.stop="markAsRead(item.id)"
                 >
                   标记为已读
                 </el-button>
                 <el-button
                     type="text"
-                    size="small"                    style="color: #F56C6C;"
-                    @click="deleteNotification(item.id)"
+                    size="small"                    style="color: #f56c6c;"
+                    @click.stop="deleteNotification(item.id)"
                 >
                   删除
                 </el-button>

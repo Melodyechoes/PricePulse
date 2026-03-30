@@ -282,4 +282,28 @@ public class DashboardService {
         cacheService.setVolatilityRanking(userId, limit, ranking);
         return ranking;
     }
+
+    /**
+     * 获取多商品价格趋势对比数据
+     */
+    public List<Map<String, Object>> getMultiProductPriceTrend(Long userId, Integer days) {
+        log.info("获取多商品价格趋势，userId={}, days={}", userId, days);
+
+        var userProducts = userProductMapper.selectByUserId(userId);
+        if (userProducts == null || userProducts.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Long> productIds = userProducts.stream()
+                .map(up -> up.getProductId())
+                .collect(Collectors.toList());
+
+        if (productIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LocalDateTime startDate = LocalDate.now().minusDays(days).atStartOfDay();
+        return priceHistoryMapper.getDailyPricesByProducts(productIds, startDate);
+    }
+
 }

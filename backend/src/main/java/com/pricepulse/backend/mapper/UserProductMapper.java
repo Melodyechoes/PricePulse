@@ -152,5 +152,9 @@ public interface UserProductMapper {
     @Select("SELECT COUNT(*) FROM user_products WHERE user_id = #{userId} AND product_id = #{productId}")
     Integer countByUserIdAndProductId(@Param("userId") Long userId, @Param("productId") Long productId);
 
-
+    /**
+     * 根据 ID 更新关注记录（简化版）
+     */
+    @Update("UPDATE user_products SET price_drop_threshold = #{priceDropThreshold}, updated_at = NOW() WHERE id = #{id}")
+    int updateById(UserProduct userProduct);
 }

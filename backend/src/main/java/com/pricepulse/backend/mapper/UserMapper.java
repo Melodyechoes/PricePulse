@@ -1,6 +1,7 @@
 package com.pricepulse.backend.mapper;
 
 import com.pricepulse.backend.common.entity.User;
+import com.pricepulse.backend.common.entity.UserProduct;
 import org.apache.ibatis.annotations.*;
 
 @Mapper
@@ -44,4 +45,6 @@ public interface UserMapper {
      */
     @Update("UPDATE users SET status = #{status}, updated_at = NOW() WHERE username = #{username}")
     int updateStatusByUsername(@Param("username") String username, @Param("status") Integer status);
+
+
 }

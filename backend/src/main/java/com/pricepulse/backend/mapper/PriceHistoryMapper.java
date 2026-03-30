@@ -89,6 +89,14 @@ public interface PriceHistoryMapper {
             @Param("startDate") LocalDateTime startDate,
             @Param("days") Integer days);
 
+    /**
+     * 获取每个商品在最近 N 天的每日价格（用于多商品对比）
+     */
+    @SelectProvider(type = PriceHistorySqlProvider.class, method = "getDailyPricesByProducts")
+    List<Map<String, Object>> getDailyPricesByProducts(
+            @Param("productIds") List<Long> productIds,
+            @Param("startDate") LocalDateTime startDate);
+
 
 
     /**

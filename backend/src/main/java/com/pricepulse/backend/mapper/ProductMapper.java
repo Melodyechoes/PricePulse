@@ -272,5 +272,11 @@ public interface ProductMapper {
     @Select("SELECT user_id FROM user_products WHERE product_id = #{productId}")
     List<Long> selectUserIdsByProductId(@Param("productId") Long productId);
 
+    /**
+     * 根据 ID 更新商品（简化版，只更新价格相关字段）
+     */
+    @Update("UPDATE products SET current_price = #{currentPrice}, original_price = #{originalPrice}, " +
+            "discount_rate = #{discountRate}, updated_at = NOW() WHERE id = #{id}")
+    int updateById(Product product);
 }
 
