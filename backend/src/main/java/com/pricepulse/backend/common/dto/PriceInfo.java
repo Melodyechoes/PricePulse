@@ -39,6 +39,11 @@ public class PriceInfo {
     private String title;
 
     /**
+     * 商品图片 URL
+     */
+    private String imageUrl;
+
+    /**
      * 错误信息（如果抓取失败）
      */
     private String errorMessage;

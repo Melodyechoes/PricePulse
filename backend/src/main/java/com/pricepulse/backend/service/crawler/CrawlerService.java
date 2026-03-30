@@ -22,4 +22,10 @@ public interface CrawlerService {
      * @return 是否支持
      */
     boolean supports(String url);
+
+    /**
+     * 获取平台标识
+     * @return 平台标识（jd/taobao/pdd）
+     */
+    String getPlatform();
 }

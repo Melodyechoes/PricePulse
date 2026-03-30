@@ -32,6 +32,12 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/products/add',
+        name: 'AddProduct',
+        component: () => import('@/views/AddProduct.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
         path: '/product/:id',
         name: 'ProductDetail',
         component: () => import('@/views/ProductDetail.vue'),
@@ -49,21 +55,12 @@ const routes = [
         component: () => import('@/views/NotificationCenter.vue'),
         meta: { requiresAuth: true }
     },
-
     {
         path: '/dashboard',
         name: 'Dashboard',
         component: () => import('@/views/Dashboard.vue'),
         meta: { requiresAuth: true }
-    },
-
-    {
-        path: '/dashboard',
-        name: 'Dashboard',
-        component: () => import('@/views/Dashboard.vue'),
-        meta: { requiresAuth: true }
-    },
-
+    }
 ]
 
 const router = createRouter({

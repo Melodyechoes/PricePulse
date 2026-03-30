@@ -3,50 +3,52 @@ package com.pricepulse.backend.service.crawler.impl;
 import com.pricepulse.backend.common.dto.PriceInfo;
 import com.pricepulse.backend.service.crawler.CrawlerService;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Random;
 
 @Service
 @Slf4j
 public class TaobaoCrawlerServiceImpl implements CrawlerService {
 
-    private static final Pattern PRICE_PATTERN = Pattern.compile("\"price\":\"(\\d+\\.?\\d*)\"");
-    private static final Pattern ORIGINAL_PRICE_PATTERN = Pattern.compile("\"originalPrice\":\"(\\d+\\.?\\d*)\"");
-    private static final Pattern TITLE_PATTERN = Pattern.compile("\"title\":\"([^\"]+)\"");
-
     @Override
     public PriceInfo crawlPrice(String url) {
         try {
-            log.info("开始抓取淘宝/天猫商品价格: {}", url);
+            log.info("【淘宝爬虫】开始抓取商品价格：{}", url);
 
-            // 模拟网页请求（实际项目中需要处理反爬机制）
-            Document doc = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0")
-                    .timeout(5000)
-                    .get();
+            // 【演示模式】生成模拟价格数据
+            // 实际项目中需要接入淘宝联盟 API
 
-            // 解析价格（这里需要根据实际页面结构调整）
-            String pageContent = doc.html();
+            String productId = extractProductId(url);
+            log.info("提取到商品 ID: {}", productId);
 
-            BigDecimal currentPrice = extractPrice(pageContent, PRICE_PATTERN);
-            BigDecimal originalPrice = extractPrice(pageContent, ORIGINAL_PRICE_PATTERN);
-            String title = extractText(pageContent, TITLE_PATTERN);
+            // 基于商品 ID 生成稳定的模拟价格
+            Random random = new Random(productId.hashCode());
+            BigDecimal basePrice = new BigDecimal(100 + random.nextInt(4900)); // 100-4999 元
+
+            // 模拟淘宝促销活动（9 折 -95 折）
+            double discountFactor = 0.9 + (random.nextDouble() * 0.05);
+            BigDecimal currentPrice = basePrice.multiply(new BigDecimal(String.valueOf(discountFactor)))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+
+            BigDecimal discountRate = currentPrice.divide(basePrice, 4, BigDecimal.ROUND_HALF_UP)
+                    .multiply(new BigDecimal("100"))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+
+            log.info("【淘宝爬虫】模拟价格：原价 {} -> 现价 {}, 折扣率 {}%",
+                    basePrice, currentPrice, discountRate);
 
             return PriceInfo.builder()
                     .currentPrice(currentPrice)
-                    .originalPrice(originalPrice)
-                    .discountRate(calculateDiscountRate(currentPrice, originalPrice))
-                    .inStock(currentPrice != null)
-                    .title(title)
+                    .originalPrice(basePrice)
+                    .discountRate(discountRate)
+                    .inStock(true)
+                    .title("淘宝商品-" + productId)
                     .build();
 
         } catch (Exception e) {
-            log.error("抓取淘宝/天猫价格失败: {}", url, e);
+            log.error("【淘宝爬虫】抓取失败：{}", url, e);
             return PriceInfo.builder()
                     .errorMessage("抓取失败：" + e.getMessage())
                     .build();
@@ -58,31 +60,24 @@ public class TaobaoCrawlerServiceImpl implements CrawlerService {
         return url.contains("taobao.com") || url.contains("tmall.com");
     }
 
-    private BigDecimal extractPrice(String content, Pattern pattern) {
-        Matcher matcher = pattern.matcher(content);
-        if (matcher.find()) {
-            try {
-                return new BigDecimal(matcher.group(1));
-            } catch (NumberFormatException e) {
-                log.warn("价格解析失败", e);
+    @Override
+    public String getPlatform() {
+        return "taobao";
+    }
+
+    private String extractProductId(String url) {
+        // 从 URL 中提取商品 ID
+        try {
+            java.net.URL urlObj = new java.net.URL(url);
+            String[] parts = urlObj.getPath().split("/");
+            for (String part : parts) {
+                if (part.matches("\\d+")) {
+                    return part;
+                }
             }
+        } catch (Exception e) {
+            log.warn("URL 解析失败", e);
         }
-        return null;
-    }
-
-    private String extractText(String content, Pattern pattern) {
-        Matcher matcher = pattern.matcher(content);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
-    }
-
-    private BigDecimal calculateDiscountRate(BigDecimal current, BigDecimal original) {
-        if (current == null || original == null || original.compareTo(BigDecimal.ZERO) == 0) {
-            return null;
-        }
-        return current.divide(original, 4, BigDecimal.ROUND_HALF_UP)
-                .multiply(new BigDecimal("100"));
+        return "未知商品";
     }
 }

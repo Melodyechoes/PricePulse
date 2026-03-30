@@ -29,8 +29,20 @@ public class UserProductService {
         // 检查是否已关注
         UserProduct existing = userProductMapper.selectByUserIdAndProductId(
                 userProduct.getUserId(), userProduct.getProductId());
+
         if (existing != null) {
-            throw new BusinessException("已关注该商品");
+            log.info("用户 {} 已关注商品 {}，更新关注设置", userProduct.getUserId(), userProduct.getProductId());
+            // 如果已关注，更新设置（如目标价格、通知开关等）
+            existing.setTargetPrice(userProduct.getTargetPrice());
+            existing.setNotificationEnabled(userProduct.getNotificationEnabled());
+            existing.setPriceDropThreshold(userProduct.getPriceDropThreshold());
+
+            int result = userProductMapper.update(existing);
+            if (result <= 0) {
+                throw new BusinessException("更新关注设置失败");
+            }
+
+            return existing;
         }
 
         // 设置默认值

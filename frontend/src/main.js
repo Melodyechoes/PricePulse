@@ -32,5 +32,16 @@ import { useUserStore } from '@/stores/user'
 const userStore = useUserStore(pinia)
 userStore.initUserInfo()
 
+// 【新增】初始化 WebSocket
+import wsClient from '@/utils/websocket'
+// 延迟 2 秒连接，确保用户信息已加载
+setTimeout(() => {
+    if (userStore.token) {
+        console.log('初始化 WebSocket 连接...')
+        wsClient.connect()
+    } else {
+        console.warn('未登录，跳过 WebSocket 连接')
+    }
+}, 2000)
 
 app.mount('#app')

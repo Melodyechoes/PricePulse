@@ -3,11 +3,10 @@ package com.pricepulse.backend.service.crawler.impl;
 import com.pricepulse.backend.common.dto.PriceInfo;
 import com.pricepulse.backend.service.crawler.CrawlerService;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Random;
 
 @Service
 @Slf4j
@@ -16,26 +15,40 @@ public class PddCrawlerServiceImpl implements CrawlerService {
     @Override
     public PriceInfo crawlPrice(String url) {
         try {
-            log.info("开始抓取拼多多商品价格：{}", url);
+            log.info("【拼多多爬虫】开始抓取商品价格：{}", url);
 
-            // 拼多多移动端页面
-            String mobileUrl = convertToMobileUrl(url);
+            // 【演示模式】生成模拟价格数据
+            // 实际项目中需要接入拼多多开放平台 API
 
-            Document doc = Jsoup.connect(mobileUrl)
-                    .userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X)")
-                    .timeout(5000)
-                    .get();
+            String productId = extractProductId(url);
+            log.info("提取到商品 ID: {}", productId);
 
-            // 尝试多种选择器获取价格
-            BigDecimal currentPrice = extractPrice(doc);
+            // 拼多多以低价著称（50-2000 元）
+            Random random = new Random(productId.hashCode());
+            BigDecimal basePrice = new BigDecimal(50 + random.nextInt(1950)); // 50-1999 元
+
+            // 模拟拼多多的百亿补贴（8 折 -9 折）
+            double discountFactor = 0.8 + (random.nextDouble() * 0.1);
+            BigDecimal currentPrice = basePrice.multiply(new BigDecimal(String.valueOf(discountFactor)))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+
+            BigDecimal discountRate = currentPrice.divide(basePrice, 4, BigDecimal.ROUND_HALF_UP)
+                    .multiply(new BigDecimal("100"))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+
+            log.info("【拼多多爬虫】模拟价格：原价 {} -> 现价 {}, 折扣率 {}%",
+                    basePrice, currentPrice, discountRate);
 
             return PriceInfo.builder()
                     .currentPrice(currentPrice)
-                    .inStock(currentPrice != null)
+                    .originalPrice(basePrice)
+                    .discountRate(discountRate)
+                    .inStock(true)
+                    .title("拼多多商品-" + productId)
                     .build();
 
         } catch (Exception e) {
-            log.error("抓取拼多多价格失败：{}", url, e);
+            log.error("【拼多多爬虫】抓取失败：{}", url, e);
             return PriceInfo.builder()
                     .errorMessage("抓取失败：" + e.getMessage())
                     .build();
@@ -47,54 +60,27 @@ public class PddCrawlerServiceImpl implements CrawlerService {
         return url.contains("yangkeduo.com") || url.contains("pinduoduo.com");
     }
 
-    private String convertToMobileUrl(String url) {
-        // 转换为移动端链接
-        if (url.contains("mobile.yangkeduo.com")) {
-            return url;
-        }
-        return url.replace("mobile.", "").replace("www.", "mobile.");
+    @Override
+    public String getPlatform() {
+        return "pdd";
     }
 
-    private BigDecimal extractPrice(Document doc) {
-        // 尝试不同的价格选择器
-        String[] selectors = {
-                ".phone-price-page .normal-price",
-                ".spec-item .normal-price",
-                ".goods-price",
-                "[class*='price']"
-        };
-
-        for (String selector : selectors) {
-            try {
-                String priceText = doc.select(selector).first().text();
-                BigDecimal price = parsePrice(priceText);
-                if (price != null) {
-                    return price;
-                }
-            } catch (Exception e) {
-                // 继续尝试下一个选择器
-            }
-        }
-        return null;
-    }
-
-    private BigDecimal parsePrice(String priceText) {
-        if (priceText == null || priceText.isEmpty()) {
-            return null;
-        }
-
+    private String extractProductId(String url) {
+        // 从 URL 中提取商品 ID
         try {
-            // 移除货币符号和空格
-            String cleanPrice = priceText.replaceAll("[￥¥\\s,]", "");
-
-            // 提取数字
-            int start = cleanPrice.indexOf('¥') != -1 ? cleanPrice.indexOf('¥') + 1 : 0;
-            String numberStr = cleanPrice.substring(start).trim();
-
-            return new BigDecimal(numberStr);
+            java.net.URL urlObj = new java.net.URL(url);
+            String query = urlObj.getQuery();
+            if (query != null && query.contains("goods_id=")) {
+                String[] params = query.split("&");
+                for (String param : params) {
+                    if (param.startsWith("goods_id=")) {
+                        return param.substring(11);
+                    }
+                }
+            }
         } catch (Exception e) {
-            log.warn("价格解析失败：{}", priceText, e);
-            return null;
+            log.warn("URL 解析失败", e);
         }
+        return "未知商品";
     }
 }

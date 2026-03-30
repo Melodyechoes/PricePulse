@@ -71,10 +71,11 @@ public interface PriceHistoryMapper {
     /**
      * 计算总节省金额
      */
-    @Select("SELECT SUM((original_price - current_price) * sales_count) " +
+    @Select("SELECT IFNULL(SUM((p.original_price - p.current_price) * IFNULL(p.sales_count, 1)), 0) " +
             "FROM products p " +
             "INNER JOIN user_products up ON p.id = up.product_id " +
             "WHERE up.user_id = #{userId} " +
+            "AND p.original_price IS NOT NULL " +
             "AND p.current_price < p.original_price")
     BigDecimal calculateTotalSavings(@Param("userId") Long userId);
 
@@ -111,4 +112,11 @@ public interface PriceHistoryMapper {
     List<Map<String, Object>> getVolatilityRanking(
             @Param("productIds") List<Long> productIds,
             @Param("limit") Integer limit);
+
+    /**
+     * 根据商品 ID 删除价格历史
+     */
+    @Delete("DELETE FROM price_history WHERE product_id = #{productId}")
+    int deleteByProductId(@Param("productId") Long productId);
+
 }

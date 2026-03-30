@@ -55,7 +55,7 @@ const chartContainer = ref(null)
 
 const chartOption = computed(() => {
   const dates = props.priceHistory.map(item =>
-      new Date(item.recordTime).toLocaleDateString('zh-CN', {
+      new Date(item.checkedAt).toLocaleDateString('zh-CN', {
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
@@ -68,6 +68,7 @@ const chartOption = computed(() => {
   const minPrice = Math.min(...prices)
   const maxPrice = Math.max(...prices)
   const padding = (maxPrice - minPrice) * 0.1 || 10
+
 
   return {
     title: {
@@ -146,16 +147,23 @@ const chartOption = computed(() => {
           width: 3
         },
         areaStyle: {
-          color: new graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgba(64, 158, 255, 0.3)'
-            },
-            {
-              offset: 1,
-              color: 'rgba(64, 158, 255, 0.05)'
-            }
-          ])
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              {
+                offset: 0,
+                color: 'rgba(64, 158, 255, 0.3)'
+              },
+              {
+                offset: 1,
+                color: 'rgba(64, 158, 255, 0.05)'
+              }
+            ]
+          }
         },
         data: prices
       }

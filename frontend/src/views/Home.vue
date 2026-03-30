@@ -51,8 +51,8 @@
                   <el-icon><clock /></el-icon>
                 </div>
                 <div class="stat-info">
-                  <div class="stat-value">30min</div>
-                  <div class="stat-label">更新频率</div>
+                  <div class="stat-value">价格更新</div>
+                  <div class="stat-label">刷新</div>
                 </div>
               </div>
             </el-col>
@@ -94,35 +94,6 @@
         </el-row>
       </div>
 
-      <!-- 功能特性 -->
-      <div class="features-section">
-        <h2 class="section-title">✨ 核心功能</h2>
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-card class="feature-card">
-              <div class="feature-icon">🕷️</div>
-              <h3>自动爬虫</h3>
-              <p>支持京东/淘宝/拼多多三大平台，自动抓取商品价格</p>
-            </el-card>
-          </el-col>
-
-          <el-col :span="8">
-            <el-card class="feature-card">
-              <div class="feature-icon">⏰</div>
-              <h3>定时更新</h3>
-              <p>每 30 分钟自动更新价格</p>
-            </el-card>
-          </el-col>
-
-          <el-col :span="8">
-            <el-card class="feature-card">
-              <div class="feature-icon">🔔</div>
-              <h3>实时通知</h3>
-              <p>价格下降立即进行站内通知</p>
-            </el-card>
-          </el-col>
-        </el-row>
-      </div>
     </div>
   </MainLayout>
 </template>
@@ -156,12 +127,12 @@ const loadStats = async () => {
       stats.value.productCount = productsRes.data?.length || 0
     }
 
-    // 获取通知统计
-    const notifRes = await request.get('/dashboard/notification-stats', {
+    // 【修改】获取 Dashboard 统计中的今日降价数（与数据统计页面一致）
+    const dashboardRes = await request.get('/dashboard/stats', {
       params: { userId }
     })
-    if (notifRes.code === 200) {
-      stats.value.priceDropToday = notifRes.data?.todayCount || 0
+    if (dashboardRes.code === 200) {
+      stats.value.priceDropToday = dashboardRes.data?.priceDropCount || 0
     }
 
     // 获取未读通知数
@@ -171,10 +142,13 @@ const loadStats = async () => {
     if (unreadRes.code === 200) {
       stats.value.notificationCount = unreadRes.data?.count || 0
     }
+
+    console.log('首页统计数据:', stats.value)
   } catch (error) {
     console.error('加载统计数据失败:', error)
   }
 }
+
 </script>
 
 <style scoped>

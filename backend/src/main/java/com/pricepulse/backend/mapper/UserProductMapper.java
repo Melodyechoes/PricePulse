@@ -146,4 +146,11 @@ public interface UserProductMapper {
     int countByProductId(Long productId);
 
 
+    /**
+     * 根据用户 ID 和商品 ID 查询关注记录数量
+     */
+    @Select("SELECT COUNT(*) FROM user_products WHERE user_id = #{userId} AND product_id = #{productId}")
+    Integer countByUserIdAndProductId(@Param("userId") Long userId, @Param("productId") Long productId);
+
+
 }

@@ -1,12 +1,16 @@
 package com.pricepulse.backend.controller;
 
+import com.pricepulse.backend.common.exception.BusinessException;
 import com.pricepulse.backend.common.response.Result;
 import com.pricepulse.backend.common.entity.UserProduct;
+import com.pricepulse.backend.mapper.UserProductMapper;
 import com.pricepulse.backend.service.UserProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -16,7 +20,6 @@ public class UserProductController {
 
     @Autowired
     private UserProductService userProductService;
-
     /**
      * 关注商品
      */
@@ -30,7 +33,6 @@ public class UserProductController {
             return Result.error(e.getMessage());
         }
     }
-
     /**
      * 取消关注
      */

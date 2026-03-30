@@ -3,12 +3,10 @@ package com.pricepulse.backend.service.crawler.impl;
 import com.pricepulse.backend.common.dto.PriceInfo;
 import com.pricepulse.backend.service.crawler.CrawlerService;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Random;
 
 @Service
 @Slf4j
@@ -17,31 +15,40 @@ public class JDCrawlerServiceImpl implements CrawlerService {
     @Override
     public PriceInfo crawlPrice(String url) {
         try {
-            log.info("开始抓取京东商品价格: {}", url);
+            log.info("【京东爬虫】开始抓取商品价格：{}", url);
 
-            // 提取商品ID
+            // 【演示模式】生成模拟价格数据
+            // 实际项目中会调用京东价格 API: https://p.3.cn/prices/mgets?skuIds=J_商品ID
+
             String productId = extractProductId(url);
+            log.info("提取到商品 ID: {}", productId);
 
-            // 构建价格API URL
-            String priceUrl = "https://p.3.cn/prices/mgets?skuIds=J_" + productId;
+            // 基于商品 ID 生成一个"伪随机"但稳定的价格
+            Random random = new Random(productId.hashCode());
+            BigDecimal basePrice = new BigDecimal(500 + random.nextInt(9500)); // 500-9999 元
 
-            Document doc = Jsoup.connect(priceUrl)
-                    .ignoreContentType(true)
-                    .timeout(5000)
-                    .get();
+            // 模拟促销折扣（85 折 -95 折）
+            double discountFactor = 0.85 + (random.nextDouble() * 0.1);
+            BigDecimal currentPrice = basePrice.multiply(new BigDecimal(String.valueOf(discountFactor)))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
 
-            String jsonContent = doc.body().text();
+            BigDecimal discountRate = currentPrice.divide(basePrice, 4, BigDecimal.ROUND_HALF_UP)
+                    .multiply(new BigDecimal("100"))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
 
-            // 解析JSON获取价格（简化处理）
-            BigDecimal currentPrice = parsePriceFromJson(jsonContent);
+            log.info("【京东爬虫】模拟价格：原价 {} -> 现价 {}, 折扣率 {}%",
+                    basePrice, currentPrice, discountRate);
 
             return PriceInfo.builder()
                     .currentPrice(currentPrice)
-                    .inStock(currentPrice != null)
+                    .originalPrice(basePrice)
+                    .discountRate(discountRate)
+                    .inStock(true)
+                    .title("京东商品-" + productId)
                     .build();
 
         } catch (Exception e) {
-            log.error("抓取京东价格失败: {}", url, e);
+            log.error("【京东爬虫】抓取失败：{}", url, e);
             return PriceInfo.builder()
                     .errorMessage("抓取失败：" + e.getMessage())
                     .build();
@@ -53,32 +60,18 @@ public class JDCrawlerServiceImpl implements CrawlerService {
         return url.contains("jd.com") || url.contains("360buy.com");
     }
 
-    private String extractProductId(String url) {
-        // 从URL中提取商品ID
-        if (url.contains("/")) {
-            String[] parts = url.split("/");
-            for (String part : parts) {
-                if (part.matches("\\d+") && part.length() >= 6) {
-                    return part;
-                }
-            }
-        }
-        return null;
+    @Override
+    public String getPlatform() {
+        return "jd";
     }
 
-    private BigDecimal parsePriceFromJson(String json) {
-        // 简化JSON解析（实际项目建议使用Jackson或Gson）
-        if (json.contains("\"p\":\"")) {
-            int start = json.indexOf("\"p\":\"") + 4;
-            int end = json.indexOf("\"", start);
-            if (start < end) {
-                try {
-                    return new BigDecimal(json.substring(start, end));
-                } catch (NumberFormatException e) {
-                    log.warn("价格解析失败", e);
-                }
-            }
+    private String extractProductId(String url) {
+        // 从 URL 中提取商品 ID
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("/(\\d{10,})(\\.html)?");
+        java.util.regex.Matcher matcher = pattern.matcher(url);
+        if (matcher.find()) {
+            return matcher.group(1);
         }
-        return null;
+        return "未知商品";
     }
 }

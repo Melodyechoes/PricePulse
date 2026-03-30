@@ -114,11 +114,10 @@ public interface ProductMapper {
     int update(Product product);
 
     /**
-     * 删除商品（软删除）
+     * 删除商品
      */
-    @Update("UPDATE products SET status = 0, updated_at = NOW() WHERE id = #{id}")
+    @Delete("DELETE FROM products WHERE id = #{id}")
     int deleteById(Long id);
-
     /**
      * 根据分类查询商品
      */
@@ -253,6 +252,7 @@ public interface ProductMapper {
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice
     );
+
 
     /**
      * 获取所有分类

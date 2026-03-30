@@ -5,7 +5,7 @@ import { useUserStore } from '@/stores/user'
 // 创建 axios 实例
 const request = axios.create({
     baseURL: '/api',
-    timeout: 10000
+    timeout: 30000  // 改为 30 秒
 })
 
 // 请求拦截器
@@ -71,3 +71,29 @@ request.interceptors.response.use(
 )
 
 export default request
+
+
+// 获取价格历史记录
+export function getPriceHistory(productId) {
+    return request({
+        url: `/products/${productId}/price-history`,
+        method: 'get'
+    })
+}
+
+// 手动爬取商品价格
+export function crawlProductPrice(productId) {
+    return request({
+        url: `/products/crawl-price/${productId}`,
+        method: 'post',
+        timeout: 30000  // 30 秒超时
+    })
+}
+
+// 删除商品
+export function deleteProduct(productId) {
+    return request({
+        url: `/products/${productId}`,
+        method: 'delete'
+    })
+}

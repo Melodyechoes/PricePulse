@@ -35,12 +35,8 @@ jwt:
   secret: PricePulseSecretKey2026VeryLongSecretKeyForSecurity123456
   expiration: 86400000  # 24小时，单位毫秒
 
-# 定时任务配置
 scheduler:
   price-update:
-    enabled: true
-    interval: 1800000  # 30 分钟
+    enabled: false
   deep-update:
-    enabled: true
-    cron: "0 0 2 * * ?"  # 每天凌晨 2 点
-
+    enabled: false

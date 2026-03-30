@@ -66,8 +66,9 @@ public class DashboardService {
         BigDecimal savedAmount = priceHistoryMapper.calculateTotalSavings(userId);
         stats.put("savedAmount", savedAmount != null ? savedAmount : BigDecimal.ZERO);
 
-        // 未读通知数量
-        stats.put("unreadCount", 0);
+        // 未读通知数量 - 从数据库查询
+        int unreadCount = notificationMapper.countUnread(userId);
+        stats.put("unreadCount", unreadCount);
 
         // 3. 写入缓存
         cacheService.setStats(userId, stats);

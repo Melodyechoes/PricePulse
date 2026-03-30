@@ -26,4 +26,5 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer status;
+    private Boolean isFollowed;
 }

@@ -19,7 +19,28 @@ export const useProductsStore = defineStore('products', () => {
         console.log('请求参数:', params)
 
         try {
-            const res = await getProductList(params)
+            // 【新增】从 localStorage 获取用户 ID
+            const userInfo = localStorage.getItem('userInfo')
+            let userId = 1
+            if (userInfo) {
+                try {
+                    const userData = JSON.parse(userInfo)
+                    userId = userData.id || 1
+                } catch (e) {
+                    console.error('解析用户信息失败:', e)
+                }
+            }
+
+            // 添加 userId 到请求参数
+            const requestParams = {
+                ...params,
+                userId: userId
+            }
+
+            console.log('实际请求参数:', requestParams)
+            console.log('当前用户 ID:', userId)
+
+            const res = await getProductList(requestParams)
 
             console.log('=== API 响应 ===')
             console.log('原始响应数据:', res)
@@ -53,6 +74,7 @@ export const useProductsStore = defineStore('products', () => {
             console.log('=== 加载结束 ===')
         }
     }
+
 
     // 获取商品详情
     async function fetchProductDetail(id) {

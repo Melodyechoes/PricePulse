@@ -124,6 +124,14 @@
               </div>
               <div class="product-actions">
                 <el-button
+                    type="success"
+                    size="small"
+                    :loading="product.crawling"
+                    @click.stop="crawlPrice(product)"
+                >
+                  刷新价格
+                </el-button>
+                <el-button
                     v-if="product.isFollowed"
                     type="danger"
                     size="small"
@@ -138,6 +146,14 @@
                     @click.stop="followProduct(product.id)"
                 >
                   关注
+                </el-button>
+                <el-button
+                    type="danger"
+                    size="small"
+                    plain
+                    @click.stop="confirmDelete(product)"
+                >
+                  删除
                 </el-button>
               </div>
             </div>
@@ -170,14 +186,15 @@
 </template>
 
 <script setup>
+import { Search, Plus } from '@element-plus/icons-vue'
 import { ref, onMounted, computed } from 'vue'
 import MainLayout from '@/components/layout/MainLayout.vue'
 import { useRouter } from 'vue-router'
 import { useProductsStore } from '@/stores/products'
-import { followProduct as followProductApi, unfollowProduct as unfollowProductApi } from '@/api/products'
-import { ElMessage } from 'element-plus'
-import { Search, Plus } from '@element-plus/icons-vue'
+import { followProduct as followProductApi, unfollowProduct as unfollowProductApi, crawlProductPrice as crawlProductPriceApi, deleteProduct as deleteProductApi } from '@/api/products'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import AddProductDialog from '@/components/AddProductDialog.vue'
+
 
 
 const router = useRouter()
@@ -191,6 +208,54 @@ const maxPrice = ref(null)
 const priceSort = ref('')
 const loading = ref(false)
 const showAddDialogFlag = ref(false)
+
+
+const confirmDelete = async (product) => {
+  try {
+    await ElMessageBox.confirm(
+        `确定要删除商品"${product.name}"吗？删除后无法恢复。`,
+        '确认删除',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+    )
+
+    await deleteProductApi(product.id)
+    ElMessage.success('删除成功')
+
+    // 重新加载列表
+    await fetchProducts()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除失败:', error)
+      ElMessage.error('删除失败')
+    }
+  }
+}
+
+
+const crawlPrice = async (product) => {
+  product.crawling = true
+  try {
+    const res = await crawlProductPriceApi(product.id)
+
+    if (res.code === 200) {
+      ElMessage.success(`价格刷新成功！`)
+      // 重新加载商品列表
+      await fetchProducts()
+    } else {
+      ElMessage.error(res.message || '刷新失败')
+    }
+  } catch (error) {
+    console.error('刷新价格失败:', error)
+    ElMessage.error('刷新价格失败，请重试')
+  } finally {
+    product.crawling = false
+  }
+}
+
 
 const availableFilters = ref({
   platforms: [],
@@ -231,6 +296,11 @@ const fetchProducts = async () => {
     // 调试输出
     console.log('商品列表:', productsStore.productList)
     console.log('分页信息:', productsStore.pagination)
+
+    // 【新增】检查每个商品的 isFollowed 字段
+    productsStore.productList.forEach(product => {
+      console.log(`商品 ${product.id}:`, product.name, 'isFollowed:', product.isFollowed)
+    })
   } catch (error) {
     console.error('加载商品列表失败:', error)
     ElMessage.error('加载商品列表失败')
@@ -257,9 +327,24 @@ const followProduct = async (productId) => {
   try {
     await followProductApi(productId, { alertThreshold: 0.1 })
     ElMessage.success('关注成功')
-    fetchProducts()
+
+    // 【修改】直接更新本地状态，不重新加载列表
+    const index = productsStore.productList.findIndex(p => p.id === productId)
+    if (index !== -1) {
+      productsStore.productList[index].isFollowed = true
+    }
   } catch (error) {
     console.error('关注失败:', error)
+    if (error.message && error.message.includes('已关注')) {
+      ElMessage.info('您已关注该商品')
+      // 直接更新本地状态
+      const index = productsStore.productList.findIndex(p => p.id === productId)
+      if (index !== -1) {
+        productsStore.productList[index].isFollowed = true
+      }
+    } else {
+      ElMessage.error('关注失败')
+    }
   }
 }
 
@@ -267,9 +352,15 @@ const unfollowProduct = async (productId) => {
   try {
     await unfollowProductApi(productId)
     ElMessage.success('已取消关注')
-    fetchProducts()
+
+    // 【修改】直接更新本地状态，不重新加载列表
+    const index = productsStore.productList.findIndex(p => p.id === productId)
+    if (index !== -1) {
+      productsStore.productList[index].isFollowed = false
+    }
   } catch (error) {
     console.error('取消关注失败:', error)
+    ElMessage.error('取消关注失败，请重试')
   }
 }
 

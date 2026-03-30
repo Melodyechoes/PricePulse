@@ -125,4 +125,20 @@ export function getPriceHistory(productId) {
     })
 }
 
+// 手动爬取商品价格
+export function crawlProductPrice(productId) {
+    return request({
+        url: `/products/crawl-price/${productId}`,
+        method: 'post'
+    })
+}
+
+// 删除商品
+export function deleteProduct(productId) {
+    return request({
+        url: `/products/${productId}`,
+        method: 'delete'
+    })
+}
+
 

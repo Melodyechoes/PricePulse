@@ -37,23 +37,23 @@ public class ProductSqlProvider {
             WHERE("status = 1");
 
             if (keyword != null && !keyword.isEmpty()) {
-                WHERE("(name LIKE '%" + keyword + "%' OR brand LIKE '%" + keyword + "%')");
+                WHERE("(name LIKE CONCAT('%', #{param1}, '%') OR brand LIKE CONCAT('%', #{param1}, '%'))");
             }
 
             if (category != null && !category.isEmpty()) {
-                WHERE("category = '" + category + "'");
+                WHERE("category = #{param2}");
             }
 
             if (platform != null && !platform.isEmpty()) {
-                WHERE("platform = '" + platform + "'");
+                WHERE("platform = #{param3}");
             }
 
             if (minPrice != null) {
-                WHERE("current_price >= " + minPrice);
+                WHERE("current_price >= #{param4}");
             }
 
             if (maxPrice != null) {
-                WHERE("current_price <= " + maxPrice);
+                WHERE("current_price <= #{param5}");
             }
 
             ORDER_BY("created_at DESC");

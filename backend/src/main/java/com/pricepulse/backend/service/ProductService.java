@@ -1,9 +1,11 @@
 package com.pricepulse.backend.service;
 
 import com.pricepulse.backend.common.entity.Product;
+import com.pricepulse.backend.common.entity.UserProduct;
 import com.pricepulse.backend.common.exception.BusinessException;
 import com.pricepulse.backend.mapper.PriceHistoryMapper;
 import com.pricepulse.backend.mapper.ProductMapper;
+import com.pricepulse.backend.mapper.UserProductMapper;
 import com.pricepulse.backend.service.crawler.CrawlerStrategyFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class ProductService {
 
     @Autowired
     private CrawlerStrategyFactory crawlerFactory;
+
+    @Autowired
+    private UserProductMapper userProductMapper;
 
     /**
      * 添加商品
@@ -127,7 +132,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         if (id == null || id <= 0) {
-            throw new BusinessException("商品ID不能为空");
+            throw new BusinessException("商品 ID 不能为空");
         }
 
         Product product = productMapper.selectById(id);
@@ -135,6 +140,19 @@ public class ProductService {
             throw new BusinessException("商品不存在");
         }
 
+        // 【新增】检查是否有人关注，如果有，先删除关注记录
+        List<UserProduct> userProducts = userProductMapper.selectByProductId(id);
+        if (!userProducts.isEmpty()) {
+            log.info("商品 {} 被 {} 个用户关注，将同步删除关注记录", product.getName(), userProducts.size());
+            for (UserProduct userProduct : userProducts) {
+                userProductMapper.deleteByUserIdAndProductId(userProduct.getUserId(), id);
+            }
+        }
+
+        // 【新增】删除价格历史记录
+        priceHistoryMapper.deleteByProductId(id);
+
+        // 删除商品本身
         int result = productMapper.deleteById(id);
         if (result <= 0) {
             throw new BusinessException("商品删除失败");
@@ -413,7 +431,17 @@ public class ProductService {
         // 模拟销量增长
         int increase = (int) (Math.random() * 100);
         return currentSales + increase;
+    }
 
+    /**
+     * 判断用户是否已关注某商品
+     */
+    public boolean isProductFollowedByUser(Long productId, Long userId) {
+        if (productId == null || userId == null) {
+            return false;
+        }
 
+        Integer count = userProductMapper.countByUserIdAndProductId(userId, productId);
+        return count != null && count > 0;
     }
 }

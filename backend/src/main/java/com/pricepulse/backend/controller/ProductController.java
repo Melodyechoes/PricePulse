@@ -1,13 +1,18 @@
 package com.pricepulse.backend.controller;
 
+import com.pricepulse.backend.common.dto.PriceInfo;
 import com.pricepulse.backend.common.entity.PriceHistory;
+import com.pricepulse.backend.common.exception.BusinessException;
 import com.pricepulse.backend.common.response.Result;
 import com.pricepulse.backend.common.entity.Product;
 import com.pricepulse.backend.service.PriceHistoryService;
 import com.pricepulse.backend.service.ProductService;
+import com.pricepulse.backend.service.crawler.CrawlerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.pricepulse.backend.service.crawler.CrawlerStrategyFactory;
+
 
 
 import jakarta.validation.Valid;
@@ -25,19 +30,95 @@ public class ProductController {
 
     @Autowired
     private PriceHistoryService priceHistoryService;
+
+    @Autowired
+    private CrawlerStrategyFactory crawlerFactory;
+
+
+
+    /**
+     * 根据 URL 解析商品信息
+     */
+    @PostMapping("/parse-url")
+    public Result<Product> parseProductUrl(@RequestBody Map<String, String> request) {
+        try {
+            String url = request.get("url");
+            if (url == null || url.trim().isEmpty()) {
+                return Result.error("URL 不能为空");
+            }
+
+            log.info("解析商品 URL: {}", url);
+
+            // 使用爬虫工厂获取对应平台的爬虫服务
+            CrawlerService crawler = crawlerFactory.getCrawler(url);
+            String platform = crawlerFactory.getPlatform(url);
+
+            // 爬取价格信息
+            PriceInfo priceInfo = crawler.crawlPrice(url);
+
+            // 构建商品对象
+            Product product = new Product();
+            product.setName(priceInfo.getTitle());
+            product.setDescription(priceInfo.getTitle());
+            product.setCategory("其他");
+            product.setPlatform(platform);
+            product.setOriginalPrice(priceInfo.getOriginalPrice() != null ?
+                    priceInfo.getOriginalPrice() : priceInfo.getCurrentPrice());
+            product.setCurrentPrice(priceInfo.getCurrentPrice());
+            product.setDiscountRate(priceInfo.getDiscountRate() != null ?
+                    priceInfo.getDiscountRate() : BigDecimal.ZERO);
+            product.setUrl(url);
+            product.setImageUrl(priceInfo.getImageUrl());
+
+            log.info("解析成功：{}", product.getName());
+            return Result.success(product);
+
+        } catch (UnsupportedOperationException e) {
+            log.error("不支持的平台", e);
+            return Result.error(e.getMessage());
+        } catch (BusinessException e) {
+            log.error("解析 URL 失败", e);
+            return Result.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("解析 URL 异常", e);
+            return Result.error("服务器内部错误");
+        }
+    }
+
     /**
      * 添加商品
      */
-    @PostMapping
-    public Result<Product> addProduct(@Valid @RequestBody Product product) {
+    @PostMapping("")
+    public Result<Product> addProduct(@RequestBody Product product) {
         try {
+            log.info("添加商品：{}", product.getName());
+
+            // 参数校验
+            if (product.getName() == null || product.getName().trim().isEmpty()) {
+                return Result.error("商品名称不能为空");
+            }
+            if (product.getUrl() == null || product.getUrl().trim().isEmpty()) {
+                return Result.error("商品链接不能为空");
+            }
+            if (product.getCurrentPrice() == null) {
+                return Result.error("商品价格不能为空");
+            }
+
+            // 保存商品
             Product savedProduct = productService.addProduct(product);
-            return Result.success("商品添加成功", savedProduct);
-        } catch (Exception e) {
+            log.info("商品添加成功，ID: {}", savedProduct.getId());
+
+            return Result.success(savedProduct);
+
+        } catch (BusinessException e) {
             log.error("添加商品失败", e);
             return Result.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("添加商品异常", e);
+            return Result.error("服务器内部错误");
         }
     }
+
 
     /**
      * 根据ID查询商品
@@ -65,7 +146,8 @@ public class ProductController {
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer pageSize) {
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) Long userId) {
         try {
             // 构建查询参数
             Map<String, Object> params = new java.util.HashMap<>();
@@ -86,6 +168,16 @@ public class ProductController {
             }
 
             List<Product> products = productService.searchWithFilters(params);
+
+            // 【修改】使用传入的 userId，如果没有则默认为 1
+            Long currentUserId = userId != null ? userId : 1L;
+            log.info("当前登录用户 ID: {}", currentUserId);
+
+            for (Product product : products) {
+                boolean isFollowed = productService.isProductFollowedByUser(product.getId(), currentUserId);
+                product.setIsFollowed(isFollowed);
+                log.debug("商品 {} - {}: isFollowed={}", product.getId(), product.getName(), isFollowed);
+            }
 
             // 价格排序
             if ("asc".equals(sort)) {
@@ -217,6 +309,64 @@ public class ProductController {
         } catch (Exception e) {
             log.error("获取价格历史失败，productId: {}", productId, e);
             return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 手动触发价格爬取
+     */
+    @PostMapping("/crawl-price/{productId}")
+    public Result<Product> crawlProductPrice(@PathVariable Long productId) {
+        try {
+            log.info("手动触发价格爬取，productId: {}", productId);
+
+            Product product = productService.getProductById(productId);
+            if (product == null) {
+                return Result.error("商品不存在");
+            }
+
+            // 【演示模式】生成模拟价格变化
+            BigDecimal basePrice = product.getOriginalPrice() != null ?
+                    product.getOriginalPrice() :
+                    (product.getCurrentPrice() != null ? product.getCurrentPrice() : new BigDecimal("1000"));
+
+            // 随机降价 5%-15%
+            double randomFactor = 0.85 + Math.random() * 0.15;
+            BigDecimal newPrice = basePrice.multiply(new BigDecimal(String.valueOf(randomFactor)))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+
+            BigDecimal discountRate = newPrice.divide(basePrice, 4, BigDecimal.ROUND_HALF_UP)
+                    .multiply(new BigDecimal("100"))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+
+            log.info("【演示模式】价格更新：原价 {} -> 新价 {}, 折扣率 {}%",
+                    basePrice, newPrice, discountRate);
+
+            // 直接更新价格相关字段
+            product.setCurrentPrice(newPrice);
+            product.setOriginalPrice(basePrice);
+            product.setDiscountRate(discountRate);
+
+            // 记录价格历史
+            PriceHistory history = new PriceHistory();
+            history.setProductId(productId);
+            history.setCheckedAt(java.time.LocalDateTime.now());
+            history.setPrice(newPrice);
+            history.setOriginalPrice(basePrice);
+            history.setDiscountRate(discountRate);
+            history.setCurrency("CNY");
+            history.setSource("manual");
+            priceHistoryService.addPriceHistory(history);
+
+            // 保存更新 - 使用完整更新
+            productService.updateProduct(product);
+
+            log.info("价格更新成功");
+            return Result.success(product);
+
+        } catch (Exception e) {
+            log.error("价格更新失败，productId: {}", productId, e);
+            return Result.error("更新失败：" + e.getMessage());
         }
     }
 }
