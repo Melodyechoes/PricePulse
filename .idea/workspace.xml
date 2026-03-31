@@ -5,21 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7d70965-c039-4b7b-a178-1d9e189b0af4" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/PriceDropNotificationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/.dockerignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/application-docker.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/init.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.dockerignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/nginx.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/start.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/DashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/NotificationMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/NotificationMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/PriceHistoryMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/PriceHistoryMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/PriceHistorySqlProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/PriceHistorySqlProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/ProductMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/ProductMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/UserProductMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/mapper/UserProductMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/DashboardService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/sql/ceshi.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/sql/ceshi.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/sql/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/sql/init.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/views/Dashboard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/Dashboard.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/views/NotificationCenter.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/NotificationCenter.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,7 +27,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="131" />
+    <option name="cachedIndexableFilesCount" value="141" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -40,6 +40,11 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsbtTreeLayoutManager">
+    <layout place="tools.popupGrunt">
+      <scroll-view-position x="0" y="0" />
+    </layout>
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -64,6 +69,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Batch.start.executor": "Run",
     "JUnit.AuthControllerTest.executor": "Run",
     "JUnit.AuthServiceTest.executor": "Run",
     "JUnit.BackendApplicationTests.contextLoads.executor": "Run",
@@ -135,6 +141,9 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\Code Study\Java\Project\price-pulse" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Code Study\Java\Project\price-pulse\backend" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.pricepulse.backend.controller" />
       <recent name="com.pricepulse.backend.mapper" />
@@ -142,6 +151,17 @@
     </key>
   </component>
   <component name="RunManager" selected="Spring Boot.BackendApplication">
+    <configuration name="start" type="BatchConfigurationType" factoryName="Batch" temporary="true">
+      <module name="price-pulse-parent" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="WORKING_DIRECTORY" value="E:\Code Study\Java\Project\price-pulse" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="start.bat" />
+      <option name="PARAMETERS" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="AuthControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
@@ -204,21 +224,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="QuickAuthTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="backend" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.pricepulse.backend.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.pricepulse.backend" />
-      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.QuickAuthTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="BackendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="backend" />
@@ -229,11 +234,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Batch.start" />
         <item itemvalue="JUnit.PriceDropNotificationTest" />
         <item itemvalue="JUnit.PriceDropNotificationTest.testMultipleUsers_ShouldNotifyAll" />
         <item itemvalue="JUnit.PriceDropNotificationTest.testPriceDrop_ShouldSendNotification" />
         <item itemvalue="JUnit.AuthControllerTest" />
-        <item itemvalue="JUnit.QuickAuthTest" />
       </list>
     </recent_temporary>
   </component>
@@ -292,7 +297,9 @@
       <workItem from="1774838249428" duration="94000" />
       <workItem from="1774838357157" duration="7115000" />
       <workItem from="1774847009330" duration="9921000" />
-      <workItem from="1774857389997" duration="1287000" />
+      <workItem from="1774857389997" duration="2218000" />
+      <workItem from="1774930446569" duration="1384000" />
+      <workItem from="1774932076060" duration="3120000" />
     </task>
     <servers />
   </component>

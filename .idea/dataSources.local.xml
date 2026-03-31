@@ -25,5 +25,14 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
+    <data-source name="0@localhost" uuid="984c619a-7cc9-4c77-af8d-62621054022c">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="REDIS" />
+      <schema-mapping />
+    </data-source>
+    <data-source name="price_pulse@mysql" uuid="bc5def6c-5776-41a8-a44d-f74033695a12">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root</user-name>
+      <schema-mapping />
+    </data-source>
   </component>
 </project>
