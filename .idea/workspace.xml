@@ -5,21 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7d70965-c039-4b7b-a178-1d9e189b0af4" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/application-docker.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/init.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/nginx.conf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/start.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/common/config/CrawlerConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/crawler/AbstractCrawlerService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/crawler/impl/JDApiCrawlerServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/crawler/impl/JDMockCrawlerServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/crawler/impl/JDCrawlerServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/crawler/impl/PddCrawlerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/crawler/impl/PddCrawlerServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/crawler/impl/TaobaoCrawlerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/pricepulse/backend/service/crawler/impl/TaobaoCrawlerServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/crawler/JDCrawlerServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/pricepulse/backend/service/crawler/JDCrawlerServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/AddProductDialog.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/AddProductDialog.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/views/AddProduct.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/AddProduct.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +73,7 @@
     "JUnit.AuthServiceTest.executor": "Run",
     "JUnit.BackendApplicationTests.contextLoads.executor": "Run",
     "JUnit.BackendApplicationTests.executor": "Run",
+    "JUnit.CrawlerStrategyFactoryIntegrationTest.executor": "Run",
     "JUnit.JDCrawlerServiceTest.executor": "Run",
     "JUnit.JwtUtilTest.executor": "Run",
     "JUnit.NotificationServiceTest.executor": "Run",
@@ -94,6 +94,7 @@
     "JUnit.UserProductMapperTest (1).executor": "Run",
     "JUnit.UserProductMapperTest.executor": "Run",
     "JUnit.UserProductServiceTest.executor": "Run",
+    "Maven.backend [clean,install,-DforkCount=0...].executor": "Debug",
     "Maven.backend [clean].executor": "Run",
     "Maven.backend [compile].executor": "Run",
     "Maven.backend [package].executor": "Run",
@@ -154,7 +155,7 @@
     <configuration name="start" type="BatchConfigurationType" factoryName="Batch" temporary="true">
       <module name="price-pulse-parent" />
       <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="E:\Code Study\Java\Project\price-pulse" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SCRIPT_NAME" value="start.bat" />
       <option name="PARAMETERS" value="" />
@@ -162,16 +163,16 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="AuthControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="CrawlerStrategyFactoryIntegrationTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.pricepulse.backend.controller.*" />
+          <option name="PATTERN" value="com.pricepulse.backend.service.crawler.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.pricepulse.backend.controller" />
-      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.controller.AuthControllerTest" />
+      <option name="PACKAGE_NAME" value="com.pricepulse.backend.service.crawler" />
+      <option name="MAIN_CLASS_NAME" value="com.pricepulse.backend.service.crawler.CrawlerStrategyFactoryIntegrationTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -234,11 +235,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.CrawlerStrategyFactoryIntegrationTest" />
         <item itemvalue="Batch.start" />
         <item itemvalue="JUnit.PriceDropNotificationTest" />
         <item itemvalue="JUnit.PriceDropNotificationTest.testMultipleUsers_ShouldNotifyAll" />
         <item itemvalue="JUnit.PriceDropNotificationTest.testPriceDrop_ShouldSendNotification" />
-        <item itemvalue="JUnit.AuthControllerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -336,10 +337,6 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/frontend/src/components/AddProductDialog.vue</url>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/frontend/src/components/layout/AppHeader.vue</url>
           <line>161</line>

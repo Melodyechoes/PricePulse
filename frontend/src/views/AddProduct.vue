@@ -8,15 +8,34 @@
         </div>
       </template>
 
+      <el-alert
+          title="提示"
+          type="info"
+          :closable="false"
+          style="margin-bottom: 20px;"
+      >
+        请输入京东、淘宝或拼多多的商品链接，点击"解析"按钮自动获取商品信息
+      </el-alert>
+
       <el-form :model="formData" label-width="120px">
         <el-form-item label="商品链接">
           <el-input
               v-model="formData.productUrl"
-              placeholder="请输入京东/淘宝/拼多多商品链接"
+              placeholder="例如：https://item.jd.com/100012345678.html"
               clearable
+              @keyup.enter="parseUrl"
           >
+            <template #prefix>
+              <el-icon><Link /></el-icon>
+            </template>
             <template #append>
-              <el-button :loading="parsing" @click="parseUrl">
+              <el-button
+                  type="primary"
+                  :loading="parsing"
+                  @click="parseUrl"
+                  :disabled="!formData.productUrl"
+              >
+                <el-icon v-if="!parsing"><Search /></el-icon>
                 {{ parsing ? '解析中...' : '解析' }}
               </el-button>
             </template>
@@ -41,12 +60,12 @@
 
             <el-col :span="16">
               <el-form :model="parsedProduct" label-width="100px">
-                <el-form-item label="商品名称">
+                <el-form-item label="商品名称" required>
                   <el-input v-model="parsedProduct.name" />
                 </el-form-item>
 
                 <el-form-item label="商品分类">
-                  <el-select v-model="parsedProduct.category" placeholder="请选择分类">
+                  <el-select v-model="parsedProduct.category" placeholder="请选择分类（可选）" clearable>
                     <el-option label="数码" value="数码" />
                     <el-option label="服装" value="服装" />
                     <el-option label="食品" value="食品" />
@@ -56,11 +75,11 @@
                   </el-select>
                 </el-form-item>
 
-                <el-form-item label="当前价格">
+                <el-form-item label="当前价格" required>
                   <el-input-number
                       v-model="parsedProduct.currentPrice"
                       :precision="2"
-                      :min="0"
+                      :min="0.01"
                       style="width: 100%;"
                   />
                 </el-form-item>
@@ -70,6 +89,7 @@
                       v-model="parsedProduct.originalPrice"
                       :precision="2"
                       :min="0"
+                      placeholder="可不填，默认与现价相同"
                       style="width: 100%;"
                   />
                 </el-form-item>
@@ -80,6 +100,8 @@
                       :precision="2"
                       :min="0"
                       :max="100"
+                      placeholder="自动计算"
+                      :disabled="true"
                       style="width: 100%;"
                   />
                 </el-form-item>
@@ -89,6 +111,7 @@
                       v-model="parsedProduct.description"
                       type="textarea"
                       :rows="3"
+                      placeholder="可不填"
                   />
                 </el-form-item>
               </el-form>
@@ -105,9 +128,10 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Link, Search } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 
 const router = useRouter()
@@ -121,13 +145,39 @@ const formData = reactive({
 
 const parsedProduct = ref(null)
 
+// 监听原价变化，自动计算折扣率
+watch(() => parsedProduct.value?.originalPrice, (newVal) => {
+  if (parsedProduct.value && newVal && parsedProduct.value.currentPrice) {
+    const rate = parsedProduct.value.currentPrice / newVal * 100
+    parsedProduct.value.discountRate = Math.round(rate * 100) / 100
+  }
+})
+
+// 监听现价变化，自动计算折扣率
+watch(() => parsedProduct.value?.currentPrice, (newVal) => {
+  if (parsedProduct.value && newVal && parsedProduct.value.originalPrice) {
+    const rate = newVal / parsedProduct.value.originalPrice * 100
+    parsedProduct.value.discountRate = Math.round(rate * 100) / 100
+  }
+})
+
 const parseUrl = async () => {
   if (!formData.productUrl) {
     ElMessage.warning('请输入商品链接')
     return
   }
 
+  // 验证 URL 格式
+  try {
+    new URL(formData.productUrl)
+  } catch (e) {
+    ElMessage.warning('请输入有效的 URL 地址')
+    return
+  }
+
   parsing.value = true
+  parsedProduct.value = null
+
   try {
     const res = await request.post('/api/products/parse-url', {
       url: formData.productUrl
@@ -135,6 +185,10 @@ const parseUrl = async () => {
 
     if (res.code === 200 && res.data) {
       parsedProduct.value = res.data
+      // 如果原价为空，设置为与现价相同
+      if (!parsedProduct.value.originalPrice) {
+        parsedProduct.value.originalPrice = parsedProduct.value.currentPrice
+      }
       ElMessage.success('解析成功')
     } else {
       ElMessage.error(res.message || '解析失败')
@@ -150,6 +204,16 @@ const parseUrl = async () => {
 const saveProduct = async () => {
   if (!parsedProduct.value) {
     ElMessage.warning('请先解析商品链接')
+    return
+  }
+
+  // 验证必填字段
+  if (!parsedProduct.value.name || !parsedProduct.value.name.trim()) {
+    ElMessage.error('商品名称不能为空')
+    return
+  }
+  if (!parsedProduct.value.currentPrice || parsedProduct.value.currentPrice <= 0) {
+    ElMessage.error('商品价格必须大于 0')
     return
   }
 
@@ -171,6 +235,7 @@ const saveProduct = async () => {
   }
 }
 </script>
+
 
 <style scoped>
 .add-product-container {

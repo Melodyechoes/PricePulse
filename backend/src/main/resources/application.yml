@@ -35,10 +35,32 @@ logging:
     org.springframework.data.redis: debug
 jwt:
   secret: PricePulseSecretKey2026VeryLongSecretKeyForSecurity123456
-  expiration: 86400000  # 24小时，单位毫秒
+  expiration: 86400000  # 24 小时，单位毫秒
 
 scheduler:
   price-update:
     enabled: false
   deep-update:
     enabled: false
+
+# 爬虫配置
+crawler:
+  jd:
+    # 是否使用真实 API（false=使用模拟数据）
+    use-api: false
+    api:
+      # API 是否启用（如果为 false，即使 use-api=true 也会降级到模拟数据）
+      enabled: true
+      # 京东价格 API 基础 URL
+      base-url: https://p.3.cn/prices/mgets
+      # API 密钥（如果需要）
+      app-key: ${JD_API_KEY:}
+      # API 超时时间（毫秒）
+      timeout: 5000
+  taobao:
+    # 淘宝目前使用模拟数据
+    use-api: false
+  pdd:
+    # 拼多多目前使用模拟数据
+    use-api: false
+
