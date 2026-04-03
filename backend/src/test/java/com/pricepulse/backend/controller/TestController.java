@@ -3,10 +3,14 @@ package com.pricepulse.backend.controller;
 import com.pricepulse.backend.common.entity.NotificationEntity;
 import com.pricepulse.backend.common.websocket.NotificationWebSocketHandler;
 import com.pricepulse.backend.mapper.NotificationMapper;
+import com.pricepulse.backend.service.crawler.CrawlerStrategyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/test")
@@ -104,4 +108,23 @@ public class TestController {
             return "❌ 批量创建失败：" + e.getMessage();
         }
     }
+
+    @Autowired
+    private CrawlerStrategyFactory crawlerStrategyFactory;
+
+    @GetMapping("/pdd/auth-url")
+    public ResponseEntity<?> generatePddAuthUrl() {
+        try {
+            // 这里需要获取 PddApiServiceImpl 实例
+            // 可以通过 Spring 注入或者直接调用方法
+            Map<String, String> result = new HashMap<>();
+            result.put("message", "请访问以下链接完成授权备案：");
+            result.put("authUrl", "请在拼多多开放平台后台生成授权链接");
+            result.put("note", "生成后访问该链接完成备案，然后调用 /pdd/check-auth 检查是否成功");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("生成失败：" + e.getMessage());
+        }
+    }
+
 }

@@ -61,6 +61,11 @@ crawler:
     # 淘宝目前使用模拟数据
     use-api: false
   pdd:
-    # 拼多多目前使用模拟数据
-    use-api: false
+    use-api: true
+    api:
+      enabled: true
+      client-id: 697e3d8450884aef9f88add67c69b6a9
+      client-secret: cf0b03cc5f41e510d83b926940b6c31a1bf1398c
+      pid: "44231125_315023937"
+      timeout: 5000
 

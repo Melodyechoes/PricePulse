@@ -1,7 +1,7 @@
 package com.pricepulse.backend.service.crawler;
 
 import com.pricepulse.backend.common.dto.PriceInfo;
-import com.pricepulse.backend.service.crawler.impl.TaobaoCrawlerServiceImpl;
+import com.pricepulse.backend.service.crawler.impl.TaobaoApiServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TaobaoCrawlerServiceTest {
 
     @Autowired
-    private TaobaoCrawlerServiceImpl taobaoCrawlerService;
+    private TaobaoApiServiceImpl taobaoCrawlerService;
 
     @Test
     void testSupports() {

@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 /**
- * 京东爬虫服务 - API 版本
+ * 京东服务 - API 版本
  * 使用京东价格 API: https://p.3.cn/prices/mgets?skuIds=J_商品 ID
  */
 @Service

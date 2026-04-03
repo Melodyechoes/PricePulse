@@ -22,11 +22,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/api/login/**",
                         "/api/register/**",
-                        "/api/auth/**",  // 排除认证接口
+                        "/api/auth/**",
                         "/api/products/**",
                         "/api/user-products/**",
-                        "/api/notifications/**",  // 排除通知接口
-                        "/api/dashboard/**",  // 新增：排除 Dashboard 接口
+                        "/api/notifications/**",
+                        "/api/dashboard/**",
+                        "/api/pdd/**",
                         "/error",
                         "/static/**",
                         "/api/test/**",

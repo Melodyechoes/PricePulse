@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.Random;
 
 @Service
-public class TaobaoCrawlerServiceImpl extends AbstractCrawlerService {
+public class TaobaoApiServiceImpl extends AbstractCrawlerService {
 
     @Override
     protected PriceInfo doCrawlPrice(String productId, String url) {
