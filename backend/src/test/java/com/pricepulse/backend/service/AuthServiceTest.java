@@ -23,7 +23,7 @@ class AuthServiceTest {
     @Test
     void testRegisterSuccess() {
         RegisterRequest request = new RegisterRequest();
-        request.setUsername("testuser_" + System.currentTimeMillis());
+        request.setUsername("testuser_" + (System.currentTimeMillis() % 1000000));
         request.setPassword("password123");
         request.setConfirmPassword("password123");
 
@@ -54,7 +54,7 @@ class AuthServiceTest {
     void testLoginSuccess() {
         // 先注册用户
         RegisterRequest registerRequest = new RegisterRequest();
-        String username = "loginTestUser_" + System.currentTimeMillis();
+        String username = "login_" + (System.currentTimeMillis() % 1000000);
         registerRequest.setUsername(username);
         registerRequest.setPassword("password123");
         registerRequest.setConfirmPassword("password123");
@@ -77,7 +77,7 @@ class AuthServiceTest {
     void testLoginWithWrongPassword() {
         // 先注册用户
         RegisterRequest registerRequest = new RegisterRequest();
-        String username = "wrongPwdUser_" + System.currentTimeMillis();
+        String username = "wrongPwd_" + (System.currentTimeMillis() % 1000000);
         registerRequest.setUsername(username);
         registerRequest.setPassword("password123");
         registerRequest.setConfirmPassword("password123");
@@ -98,7 +98,7 @@ class AuthServiceTest {
     void testGetCurrentUserInfo() {
         // 先注册用户
         RegisterRequest registerRequest = new RegisterRequest();
-        String username = "getCurrentUser_" + System.currentTimeMillis();
+        String username = "getUser_" + (System.currentTimeMillis() % 1000000);
         registerRequest.setUsername(username);
         registerRequest.setPassword("password123");
         registerRequest.setConfirmPassword("password123");
@@ -111,5 +111,40 @@ class AuthServiceTest {
 
         assertThat(currentUserInfo).isNotNull();
         assertThat(currentUserInfo.getUsername()).isEqualTo(username);
+    }
+
+    @Test
+    void testRegisterWithInvalidPassword() {
+        RegisterRequest request = new RegisterRequest();
+        request.setUsername("invPwd_" + (System.currentTimeMillis() % 1000000));
+        request.setPassword("123"); // 密码太短
+        request.setConfirmPassword("123");
+
+        assertThrows(RuntimeException.class, () -> {
+            authService.register(request);
+        });
+    }
+
+    @Test
+    void testRegisterWithMismatchedPasswords() {
+        RegisterRequest request = new RegisterRequest();
+        request.setUsername("mismatch_" + (System.currentTimeMillis() % 1000000));
+        request.setPassword("password123");
+        request.setConfirmPassword("differentPassword");
+
+        assertThrows(RuntimeException.class, () -> {
+            authService.register(request);
+        });
+    }
+
+    @Test
+    void testLoginWithNonExistentUser() {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("nonexist_" + (System.currentTimeMillis() % 1000000));
+        loginRequest.setPassword("password123");
+
+        assertThrows(RuntimeException.class, () -> {
+            authService.login(loginRequest);
+        });
     }
 }

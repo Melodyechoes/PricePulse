@@ -143,14 +143,6 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
-
-        <!-- 拼多多 POP SDK -->
-        <dependency>
-            <groupId>com.pdd.pop</groupId>
-            <artifactId>pdd-pop-sdk</artifactId>
-            <version>1.1.0</version>
-        </dependency>
-
     </dependencies>
 
     <!-- 构建配置 -->

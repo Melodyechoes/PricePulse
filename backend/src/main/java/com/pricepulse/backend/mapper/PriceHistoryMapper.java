@@ -106,22 +106,6 @@ public interface PriceHistoryMapper {
     Map<String, Integer> countByCategory(@Param("productIds") List<Long> productIds);
 
     /**
-     * 获取降价排行榜（使用 SQL Provider）
-     */
-    @SelectProvider(type = PriceHistorySqlProvider.class, method = "getPriceDropRanking")
-    List<Map<String, Object>> getPriceDropRanking(
-            @Param("productIds") List<Long> productIds,
-            @Param("limit") Integer limit);
-
-    /**
-     * 获取价格波动率排行（使用 SQL Provider）
-     */
-    @SelectProvider(type = PriceHistorySqlProvider.class, method = "getVolatilityRanking")
-    List<Map<String, Object>> getVolatilityRanking(
-            @Param("productIds") List<Long> productIds,
-            @Param("limit") Integer limit);
-
-    /**
      * 根据商品 ID 删除价格历史
      */
     @Delete("DELETE FROM price_history WHERE product_id = #{productId}")

@@ -2,6 +2,8 @@ package com.pricepulse.backend.service;
 
 import com.pricepulse.backend.common.entity.UserProduct;
 import com.pricepulse.backend.common.exception.BusinessException;
+import com.pricepulse.backend.mapper.ProductMapper;
+import com.pricepulse.backend.mapper.UserMapper;
 import com.pricepulse.backend.mapper.UserProductMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,12 @@ public class UserProductService {
     @Autowired
     private UserProductMapper userProductMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private ProductMapper productMapper;
+
     /**
      * 关注商品
      */
@@ -25,6 +33,16 @@ public class UserProductService {
     public UserProduct followProduct(UserProduct userProduct) {
         // 参数验证
         validateUserProduct(userProduct);
+
+        // 验证用户是否存在
+        if (userMapper.selectById(userProduct.getUserId()) == null) {
+            throw new BusinessException("用户不存在，ID: " + userProduct.getUserId());
+        }
+
+        // 验证商品是否存在
+        if (productMapper.selectById(userProduct.getProductId()) == null) {
+            throw new BusinessException("商品不存在，ID: " + userProduct.getProductId());
+        }
 
         // 检查是否已关注
         UserProduct existing = userProductMapper.selectByUserIdAndProductId(

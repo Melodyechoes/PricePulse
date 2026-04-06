@@ -26,7 +26,7 @@ class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void testRegister() throws Exception {
+    void testRegisterSuccess() throws Exception {
         RegisterRequest request = new RegisterRequest();
         // 使用短用户名，确保不超过20个字符
         String username = "test_" + (System.currentTimeMillis() % 100000);
@@ -43,6 +43,37 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data.token").exists())
                 .andExpect(jsonPath("$.data.userInfo.username").value(username));
+    }
+
+    @Test
+    void testRegisterWithDuplicateUsername() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        String username = "duplicate_" + (System.currentTimeMillis() % 100000);
+        request.setUsername(username);
+        request.setPassword("password123");
+        request.setConfirmPassword("password123");
+
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        // 第一次注册成功
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+
+        // 第二次注册应该失败
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(result -> {
+                    // 期望返回错误信息（code=400 或其他非200）
+                    String response = result.getResponse().getContentAsString();
+                    org.junit.jupiter.api.Assertions.assertTrue(
+                        response.contains("\"code\":400") || response.contains("用户名已存在"),
+                        "重复注册应该失败"
+                    );
+                });
     }
 
 
@@ -88,7 +119,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
 

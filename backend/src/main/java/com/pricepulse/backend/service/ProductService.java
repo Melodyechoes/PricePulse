@@ -19,6 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 商品管理服务
+ * <p>
+ * 提供商品的增删改查、价格更新、搜索过滤等核心功能
+ *
+ * @author PricePulse Team
+ * @since 2026-04-06
+ */
 @Service
 @Slf4j
 public class ProductService {
@@ -40,6 +48,15 @@ public class ProductService {
 
     /**
      * 添加商品
+     * <p>
+     * 1. 验证商品参数
+     * 2. 检查是否已存在相同商品（根据platformId）
+     * 3. 设置默认值（status=1, stockStatus=1）
+     * 4. 插入数据库
+     *
+     * @param product 商品信息
+     * @return 保存后的商品，包含生成的ID
+     * @throws BusinessException 当参数无效或商品已存在时抛出
      */
     @Transactional
     public Product addProduct(Product product) {
@@ -69,13 +86,17 @@ public class ProductService {
             throw new BusinessException("商品添加失败");
         }
 
-        log.info("商品添加成功，ID: {}", product.getId());
+        log.info("商品添加成功, ID: {}, name: {}", product.getId(), product.getName());
         return product;
     }
 
 
     /**
      * 根据ID查询商品
+     *
+     * @param id 商品ID
+     * @return 商品详细信息
+     * @throws BusinessException 当ID无效或商品不存在时抛出
      */
     public Product getProductById(Long id) {
         if (id == null || id <= 0) {
@@ -128,6 +149,14 @@ public class ProductService {
 
     /**
      * 删除商品
+     * <p>
+     * 级联删除：
+     * 1. 删除用户关注记录（user_products表）
+     * 2. 删除价格历史记录（price_history表）
+     * 3. 删除商品本身（products表）
+     *
+     * @param id 商品ID
+     * @throws BusinessException 当ID无效或商品不存在时抛出
      */
     @Transactional
     public void deleteProduct(Long id) {
@@ -140,7 +169,7 @@ public class ProductService {
             throw new BusinessException("商品不存在");
         }
 
-        // 【新增】检查是否有人关注，如果有，先删除关注记录
+        // 检查是否有人关注，如果有，先删除关注记录
         List<UserProduct> userProducts = userProductMapper.selectByProductId(id);
         if (!userProducts.isEmpty()) {
             log.info("商品 {} 被 {} 个用户关注，将同步删除关注记录", product.getName(), userProducts.size());
@@ -149,7 +178,7 @@ public class ProductService {
             }
         }
 
-        // 【新增】删除价格历史记录
+        // 删除价格历史记录
         priceHistoryMapper.deleteByProductId(id);
 
         // 删除商品本身
@@ -158,7 +187,7 @@ public class ProductService {
             throw new BusinessException("商品删除失败");
         }
 
-        log.info("商品删除成功，ID: {}", id);
+        log.info("商品删除成功, ID: {}, name: {}", id, product.getName());
     }
 
     /**

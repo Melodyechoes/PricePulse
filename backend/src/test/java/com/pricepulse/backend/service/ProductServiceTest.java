@@ -94,13 +94,17 @@ class ProductServiceTest {
         // 先添加商品
         Product product = createValidProduct();
         Product savedProduct = productService.addProduct(product);
+        Long productId = savedProduct.getId();
 
         // 删除商品
-        productService.deleteProduct(savedProduct.getId());
+        productService.deleteProduct(productId);
 
-        // 验证商品已被软删除（status = 0）
-        Product deletedProduct = productService.getProductById(savedProduct.getId());
-        assertThat(deletedProduct.getStatus()).isEqualTo(0);
+        // 验证商品已被硬删除（查询应抛出异常）
+        org.junit.jupiter.api.Assertions.assertThrows(
+            com.pricepulse.backend.common.exception.BusinessException.class,
+            () -> productService.getProductById(productId),
+            "删除后商品应不存在"
+        );
     }
 
     @Test

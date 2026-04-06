@@ -61,22 +61,6 @@ public class DashboardController {
     }
 
     /**
-     * 获取降价排行榜
-     */
-    @GetMapping("/price-drop-ranking")
-    public Result<List<Map<String, Object>>> getPriceDropRanking(
-            @RequestParam Long userId,
-            @RequestParam(defaultValue = "10") Integer limit) {
-        try {
-            List<Map<String, Object>> ranking = dashboardService.getPriceDropRanking(userId, limit);
-            return Result.success(ranking);
-        } catch (Exception e) {
-            log.error("获取降价排行榜失败", e);
-            return Result.error(e.getMessage());
-        }
-    }
-
-    /**
      * 获取通知统计数据
      */
     @GetMapping("/notification-stats")
@@ -100,22 +84,6 @@ public class DashboardController {
             return Result.success(distribution);
         } catch (Exception e) {
             log.error("获取平台分布失败", e);
-            return Result.error(e.getMessage());
-        }
-    }
-
-    /**
-     * 获取价格波动率排行
-     */
-    @GetMapping("/volatility-ranking")
-    public Result<List<Map<String, Object>>> getVolatilityRanking(
-            @RequestParam Long userId,
-            @RequestParam(defaultValue = "10") Integer limit) {
-        try {
-            List<Map<String, Object>> ranking = dashboardService.getVolatilityRanking(userId, limit);
-            return Result.success(ranking);
-        } catch (Exception e) {
-            log.error("获取价格波动率排行失败", e);
             return Result.error(e.getMessage());
         }
     }

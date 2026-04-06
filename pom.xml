@@ -80,7 +80,7 @@
     <build>
         <pluginManagement>
             <plugins>
-                <!-- Maven编译器插件 -->
+                <!-- Maven 编译器插件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -94,7 +94,7 @@
                     </configuration>
                 </plugin>
 
-                <!-- Spring Boot Maven插件 -->
+                <!-- Spring Boot Maven 插件 -->
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>

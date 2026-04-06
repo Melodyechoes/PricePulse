@@ -15,6 +15,7 @@ public class UserInfo {
 
     private Long id;
     private String username;
+    private String role; // ADMIN 或 USER
     private LocalDateTime createdAt;
     private Integer status;
 

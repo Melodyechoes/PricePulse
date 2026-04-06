@@ -60,6 +60,18 @@ const routes = [
         name: 'Dashboard',
         component: () => import('@/views/Dashboard.vue'),
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/admin/users',
+        name: 'UserManagement',
+        component: () => import('@/views/admin/UserManagement.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+        path: '/admin/products',
+        name: 'ProductAudit',
+        component: () => import('@/views/admin/ProductAudit.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true }
     }
 ]
 
@@ -80,6 +92,10 @@ router.beforeEach((to, from, next) => {
         } else {
             next()
         }
+    } else if (to.meta.requiresAdmin && userStore.userInfo?.role !== 'ADMIN') {
+        // 需要管理员权限但用户不是管理员
+        alert('无管理员权限，无法访问')
+        next('/home')
     } else {
         next()
     }

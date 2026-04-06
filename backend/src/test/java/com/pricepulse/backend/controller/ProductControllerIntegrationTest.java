@@ -87,9 +87,43 @@ class ProductControllerIntegrationTest {
     }
 
     @Test
-    void testInvalidProductId() throws Exception {
-        mockMvc.perform(get("/api/products/invalid"))
-                .andExpect(status().isBadRequest());
+    void testAddProductWithInvalidData() throws Exception {
+        Product product = new Product();
+        // 缺少必要字段
+        product.setName("");
+
+        String productJson = objectMapper.writeValueAsString(product);
+
+        mockMvc.perform(post("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson))
+                .andExpect(result -> {
+                    // 期望返回错误信息（code=400 或包含错误消息）
+                    String response = result.getResponse().getContentAsString();
+                    org.junit.jupiter.api.Assertions.assertTrue(
+                        response.contains("\"code\":400") || response.contains("不能为空"),
+                        "无效数据应该导致失败"
+                    );
+                });
+    }
+
+    @Test
+    void testUpdateProductPrice() throws Exception {
+        // 先添加商品
+        Product product = createTestProduct();
+        String productJson = objectMapper.writeValueAsString(product);
+
+        String response = mockMvc.perform(post("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // 简化处理，使用ID=1测试
+        mockMvc.perform(put("/api/products/1/price")
+                        .param("newPrice", "399.99"))
+                .andExpect(status().isOk());
     }
 
     private Product createTestProduct() {

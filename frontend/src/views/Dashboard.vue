@@ -101,6 +101,31 @@
       </el-row>
 
 
+      <!-- 管理员入口 -->
+      <el-row :gutter="20" style="margin-top: 20px;" v-if="isAdmin">
+        <el-col :span="24">
+          <el-card>
+            <template #header>
+              <div class="card-header">
+                <span>🔧 管理后台</span>
+              </div>
+            </template>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-button type="primary" size="large" @click="$router.push('/admin/users')" style="width: 100%;">
+                  👥 用户管理
+                </el-button>
+              </el-col>
+              <el-col :span="12">
+                <el-button type="success" size="large" @click="$router.push('/admin/products')" style="width: 100%;">
+                  📦 商品审核
+                </el-button>
+              </el-col>
+            </el-row>
+          </el-card>
+        </el-col>
+      </el-row>
+
     </div>
   </MainLayout>
 </template>
@@ -122,6 +147,9 @@ use([CanvasRenderer, LineChart, PieChart, BarChart, TitleComponent, TooltipCompo
 
 const userStore = useUserStore()
 
+// 是否为管理员
+const isAdmin = ref(userStore.userInfo?.role === 'ADMIN')
+
 // 统计数据
 const stats = ref({
   followedCount: 0,
@@ -141,10 +169,6 @@ const trendOption = ref(null)
 const categoryLoading = ref(false)
 const categoryOption = ref(null)
 
-// 降价排行榜
-const rankingLoading = ref(false)
-const priceDropRanking = ref([])
-
 // 通知统计
 const notificationLoading = ref(false)
 const notificationOption = ref(null)
@@ -153,20 +177,13 @@ const notificationOption = ref(null)
 const platformLoading = ref(false)
 const platformOption = ref(null)
 
-// 价格波动率排行
-const volatilityLoading = ref(false)
-const volatilityRanking = ref([])
-
-
 
 onMounted(async () => {
   await loadStats()
   await loadFollowedProducts()
   await loadCategoryDistribution()
-  await loadPriceDropRanking()
   await loadNotificationStats()
   await loadPlatformDistribution()
-  await loadVolatilityRanking()
 })
 
 // 加载统计数据
@@ -453,28 +470,6 @@ const loadCategoryDistribution = async () => {
   }
 }
 
-// 加载降价排行榜
-const loadPriceDropRanking = async () => {
-  rankingLoading.value = true
-  try {
-    const userId = userStore.userInfo?.id || 1
-    const res = await request.get('/dashboard/price-drop-ranking', {
-      params: {
-        userId,
-        limit: 10
-      }
-    })
-
-    if (res.code === 200) {
-      priceDropRanking.value = res.data || []
-    }
-  } catch (error) {
-    console.error('加载降价排行榜失败:', error)
-  } finally {
-    rankingLoading.value = false
-  }
-}
-
 
 // 加载通知统计
 const loadNotificationStats = async () => {
@@ -606,28 +601,6 @@ const loadPlatformDistribution = async () => {
     console.error('加载平台分布失败:', error)
   } finally {
     platformLoading.value = false
-  }
-}
-
-// 加载价格波动率排行
-const loadVolatilityRanking = async () => {
-  volatilityLoading.value = true
-  try {
-    const userId = userStore.userInfo?.id || 1
-    const res = await request.get('/dashboard/volatility-ranking', {
-      params: {
-        userId,
-        limit: 10
-      }
-    })
-
-    if (res.code === 200) {
-      volatilityRanking.value = res.data || []
-    }
-  } catch (error) {
-    console.error('加载价格波动率排行失败:', error)
-  } finally {
-    volatilityLoading.value = false
   }
 }
 

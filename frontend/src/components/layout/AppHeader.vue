@@ -9,7 +9,9 @@
         <router-link to="/home" class="nav-item">首页</router-link>
         <router-link to="/dashboard" class="nav-item">数据统计</router-link>
         <router-link to="/products" class="nav-item">商品列表</router-link>
-        <router-link to="/profile" class="nav-item">个人中心</router-link>     </div>
+        <router-link to="/profile" class="nav-item">个人中心</router-link>
+        <router-link v-if="userStore.userInfo?.role === 'ADMIN'" to="/admin/users" class="nav-item">管理后台</router-link>
+      </div>
 
       <div class="user-info">
         <!-- 通知铃铛图标 -->

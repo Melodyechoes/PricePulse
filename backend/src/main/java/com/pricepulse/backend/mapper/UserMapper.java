@@ -4,6 +4,8 @@ import com.pricepulse.backend.common.entity.User;
 import com.pricepulse.backend.common.entity.UserProduct;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
 
@@ -46,5 +48,22 @@ public interface UserMapper {
     @Update("UPDATE users SET status = #{status}, updated_at = NOW() WHERE username = #{username}")
     int updateStatusByUsername(@Param("username") String username, @Param("status") Integer status);
 
+    /**
+     * 查询所有用户
+     */
+    @Select("SELECT * FROM users ORDER BY created_at DESC")
+    List<User> selectAllUsers();
+
+    /**
+     * 更新密码
+     */
+    @Update("UPDATE users SET password = #{password}, updated_at = NOW() WHERE username = #{username}")
+    int updatePassword(@Param("username") String username, @Param("password") String password);
+
+    /**
+     * 更新用户角色
+     */
+    @Update("UPDATE users SET role = #{role}, updated_at = NOW() WHERE id = #{id}")
+    int updateRole(@Param("id") Long id, @Param("role") String role);
 
 }

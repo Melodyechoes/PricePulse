@@ -24,8 +24,9 @@ class WebSocketClient {
         }
 
         try {
-            // 构建 WebSocket URL
-            const wsUrl = `ws://localhost:8080/ws?token=${token}`
+            // 构建 WebSocket URL（通过 Nginx 代理）
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+            const wsUrl = `${wsProtocol}//${window.location.host}/ws?token=${token}`
 
             // 创建 WebSocket 连接
             this.ws = new WebSocket(wsUrl)

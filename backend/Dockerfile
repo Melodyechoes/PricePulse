@@ -12,13 +12,11 @@ COPY ../backend/pom.xml ./backend/pom.xml
 # 进入 backend 目录
 WORKDIR /app/backend
 
-# 下载依赖
-RUN mvn dependency:go-offline -B
-
-# 复制源代码
+# 复制源代码（先复制，这样 Maven 构建时才能找到）
 COPY ../backend/src ./src
 
-# 构建项目
+# 直接构建项目（Maven 会自动下载需要的依赖）
+# 不使用 dependency:go-offline，因为某些依赖可能在中央仓库不存在
 RUN mvn clean package -DskipTests -B
 
 # 暴露端口

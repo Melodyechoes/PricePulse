@@ -157,45 +157,6 @@ public class DashboardService {
     }
 
     /**
-     * 获取降价排行榜
-     */
-    public List<Map<String, Object>> getPriceDropRanking(Long userId, Integer limit) {
-        // 1. 先尝试从缓存获取
-        Object cached = cacheService.getPriceDropRanking(userId, limit);
-        if (cached != null) {
-            log.info("命中降价排行榜缓存，userId={}, limit={}", userId, limit);
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> ranking = (List<Map<String, Object>>) cached;
-            return ranking;
-        }
-
-        log.info("未命中降价排行榜缓存，userId={}, limit={}", userId, limit);
-
-        // 2. 缓存未命中，查询数据库
-        List<Map<String, Object>> ranking= new ArrayList<>();
-
-        var userProducts = userProductMapper.selectByUserId(userId);
-        if (userProducts == null || userProducts.isEmpty()) {
-            return ranking;
-        }
-
-        List<Long> productIds = userProducts.stream()
-                .map(up -> up.getProductId())
-                .collect(Collectors.toList());
-
-        if (productIds.isEmpty()) {
-            return ranking;
-        }
-
-        ranking = priceHistoryMapper.getPriceDropRanking(productIds, limit);
-
-        // 3. 写入缓存
-        cacheService.setPriceDropRanking(userId, limit, ranking);
-
-        return ranking;
-    }
-
-    /**
      * 获取通知统计数据
      */
     public Map<String, Object> getNotificationStats(Long userId) {
@@ -255,32 +216,6 @@ public class DashboardService {
 
         cacheService.setPlatformDistribution(userId, distribution);
         return distribution;
-    }
-
-    /**
-     * 获取价格波动率排行
-     */
-    public List<Map<String, Object>> getVolatilityRanking(Long userId, Integer limit) {
-        Object cached = cacheService.getVolatilityRanking(userId, limit);
-        if (cached != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> ranking = (List<Map<String, Object>>) cached;
-            return ranking;
-        }
-
-        var userProducts = userProductMapper.selectByUserId(userId);
-        if (userProducts == null || userProducts.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<Long> productIds = userProducts.stream()
-                .map(up -> up.getProductId())
-                .collect(Collectors.toList());
-
-        List<Map<String, Object>> ranking = priceHistoryMapper.getVolatilityRanking(productIds, limit);
-
-        cacheService.setVolatilityRanking(userId, limit, ranking);
-        return ranking;
     }
 
     /**

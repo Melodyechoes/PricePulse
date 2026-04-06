@@ -2,25 +2,33 @@ package com.pricepulse.backend.controller;
 
 import com.pricepulse.backend.common.dto.PriceInfo;
 import com.pricepulse.backend.common.entity.PriceHistory;
+import com.pricepulse.backend.common.entity.Product;
+import com.pricepulse.backend.common.entity.UserProduct;
 import com.pricepulse.backend.common.exception.BusinessException;
 import com.pricepulse.backend.common.response.Result;
-import com.pricepulse.backend.common.entity.Product;
+import com.pricepulse.backend.mapper.UserProductMapper;
+import com.pricepulse.backend.service.NotificationService;
 import com.pricepulse.backend.service.PriceHistoryService;
 import com.pricepulse.backend.service.ProductService;
 import com.pricepulse.backend.service.crawler.CrawlerService;
-import com.pricepulse.backend.service.NotificationService;
-import com.pricepulse.backend.mapper.UserProductMapper;
-import com.pricepulse.backend.common.entity.UserProduct;
+import com.pricepulse.backend.service.crawler.CrawlerStrategyFactory;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.pricepulse.backend.service.crawler.CrawlerStrategyFactory;
 
-import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 商品管理控制器
+ * <p>
+ * 提供商品的增删改查、价格解析、价格历史查询等功能
+ *
+ * @author PricePulse Team
+ * @since 2026-04-06
+ */
 @RestController
 @RequestMapping("/api/products")
 @Slf4j
@@ -43,6 +51,11 @@ public class ProductController {
 
     /**
      * 根据 URL 解析商品信息
+     * <p>
+     * 使用爬虫服务从电商平台URL中提取商品信息，包括名称、价格、图片等
+     *
+     * @param request 请求参数，必须包含 url 字段
+     * @return 解析后的商品信息
      */
     @PostMapping("/parse-url")
     public Result<Product> parseProductUrl(@RequestBody Map<String, String> request) {
@@ -75,28 +88,31 @@ public class ProductController {
             product.setUrl(url);
             product.setImageUrl(priceInfo.getImageUrl());
 
-            log.info("解析成功：{}", product.getName());
+            log.info("解析成功: {}", product.getName());
             return Result.success(product);
 
         } catch (UnsupportedOperationException e) {
-            log.error("不支持的平台", e);
+            log.error("不支持的平台, url: {}", request.get("url"), e);
             return Result.error(e.getMessage());
         } catch (BusinessException e) {
-            log.error("解析 URL 失败", e);
+            log.error("解析 URL 失败, url: {}", request.get("url"), e);
             return Result.error(e.getMessage());
         } catch (Exception e) {
-            log.error("解析 URL 异常", e);
+            log.error("解析 URL 异常, url: {}", request.get("url"), e);
             return Result.error("服务器内部错误");
         }
     }
 
     /**
      * 添加商品
+     *
+     * @param product 商品信息，必须包含名称、URL、当前价格
+     * @return 保存后的商品信息，包含生成的ID
      */
     @PostMapping("")
     public Result<Product> addProduct(@RequestBody Product product) {
         try {
-            log.info("添加商品：{}", product.getName());
+            log.info("添加商品: {}", product.getName());
 
             // 参数校验
             if (product.getName() == null || product.getName().trim().isEmpty()) {
@@ -111,15 +127,15 @@ public class ProductController {
 
             // 保存商品
             Product savedProduct = productService.addProduct(product);
-            log.info("商品添加成功，ID: {}", savedProduct.getId());
+            log.info("商品添加成功, ID: {}", savedProduct.getId());
 
             return Result.success(savedProduct);
 
         } catch (BusinessException e) {
-            log.error("添加商品失败", e);
+            log.error("添加商品失败, productName: {}", product.getName(), e);
             return Result.error(e.getMessage());
         } catch (Exception e) {
-            log.error("添加商品异常", e);
+            log.error("添加商品异常, productName: {}", product.getName(), e);
             return Result.error("服务器内部错误");
         }
     }

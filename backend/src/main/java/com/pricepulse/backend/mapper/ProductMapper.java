@@ -278,5 +278,71 @@ public interface ProductMapper {
     @Update("UPDATE products SET current_price = #{currentPrice}, original_price = #{originalPrice}, " +
             "discount_rate = #{discountRate}, updated_at = NOW() WHERE id = #{id}")
     int updateById(Product product);
+
+    /**
+     * 根据状态查询商品
+     */
+    @Select("SELECT * FROM products WHERE status = #{status} ORDER BY created_at DESC")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "url", column = "url"),
+            @Result(property = "imageUrl", column = "image_url"),
+            @Result(property = "platform", column = "platform"),
+            @Result(property = "platformId", column = "platform_id"),
+            @Result(property = "brand", column = "brand"),
+            @Result(property = "category", column = "category"),
+            @Result(property = "currentPrice", column = "current_price"),
+            @Result(property = "originalPrice", column = "original_price"),
+            @Result(property = "discountRate", column = "discount_rate"),
+            @Result(property = "salesCount", column = "sales_count"),
+            @Result(property = "rating", column = "rating"),
+            @Result(property = "reviewCount", column = "review_count"),
+            @Result(property = "stockStatus", column = "stock_status"),
+            @Result(property = "lastChecked", column = "last_checked"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at"),
+            @Result(property = "status", column = "status")
+    })
+    List<Product> selectByStatus(@Param("status") Integer status);
+
+    /**
+     * 查询所有商品（管理员用，包含所有状态）
+     */
+    @Select("SELECT * FROM products ORDER BY created_at DESC")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "url", column = "url"),
+            @Result(property = "imageUrl", column = "image_url"),
+            @Result(property = "platform", column = "platform"),
+            @Result(property = "platformId", column = "platform_id"),
+            @Result(property = "brand", column = "brand"),
+            @Result(property = "category", column = "category"),
+            @Result(property = "currentPrice", column = "current_price"),
+            @Result(property = "originalPrice", column = "original_price"),
+            @Result(property = "discountRate", column = "discount_rate"),
+            @Result(property = "salesCount", column = "sales_count"),
+            @Result(property = "rating", column = "rating"),
+            @Result(property = "reviewCount", column = "review_count"),
+            @Result(property = "stockStatus", column = "stock_status"),
+            @Result(property = "lastChecked", column = "last_checked"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at"),
+            @Result(property = "status", column = "status")
+    })
+    List<Product> selectAllProducts();
+
+    /**
+     * 更新描述
+     */
+    @Update("UPDATE products SET description = #{description}, updated_at = NOW() WHERE id = #{id}")
+    int updateDescription(@Param("id") Long id, @Param("description") String description);
+
+    /**
+     * 更新商品状态
+     */
+    @Update("UPDATE products SET status = #{status}, updated_at = NOW() WHERE id = #{id}")
+    int updateStatus(@Param("id") Long id, @Param("status") Integer status);
 }
 

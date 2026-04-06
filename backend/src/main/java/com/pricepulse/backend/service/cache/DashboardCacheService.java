@@ -21,10 +21,8 @@ public class DashboardCacheService {
     private static final String DASHBOARD_STATS_KEY = "dashboard:stats:";
     private static final String DASHBOARD_TREND_KEY = "dashboard:trend:";
     private static final String DASHBOARD_CATEGORY_KEY = "dashboard:category:";
-    private static final String DASHBOARD_RANKING_KEY = "dashboard:ranking:";
     private static final String DASHBOARD_NOTIFICATION_KEY = "dashboard:notification:";
     private static final String DASHBOARD_PLATFORM_KEY = "dashboard:platform:";
-    private static final String DASHBOARD_VOLATILITY_KEY = "dashboard:volatility:";
 
     // 缓存时间：5 分钟
     private static final long CACHE_TTL_MINUTES = 5;
@@ -108,32 +106,6 @@ public class DashboardCacheService {
     }
 
     /**
-     * 获取降价排行榜缓存
-     */
-    public Object getPriceDropRanking(Long userId, Integer limit) {
-        String key = DASHBOARD_RANKING_KEY + userId + ":" + limit;
-        try {
-            return redisTemplate.opsForValue().get(key);
-        } catch (Exception e) {
-            log.error("获取降价排行榜缓存失败，userId={}, limit={}", userId, limit, e);
-            return null;
-        }
-    }
-
-    /**
-     * 设置降价排行榜缓存
-     */
-    public void setPriceDropRanking(Long userId, Integer limit, Object data) {
-        String key = DASHBOARD_RANKING_KEY + userId + ":" + limit;
-        try {
-            redisTemplate.opsForValue().set(key, data, CACHE_TTL_MINUTES, TimeUnit.MINUTES);
-            log.debug("设置降价排行榜缓存，key={}, TTL={}分钟", key, CACHE_TTL_MINUTES);
-        } catch (Exception e) {
-            log.error("设置降价排行榜缓存失败，userId={}, limit={}", userId, limit, e);
-        }
-    }
-
-    /**
      * 获取通知统计缓存
      */
     public Object getNotificationStats(Long userId) {
@@ -182,32 +154,6 @@ public class DashboardCacheService {
             log.debug("设置平台分布缓存，key={}, TTL={}分钟", key, CACHE_TTL_MINUTES);
         } catch (Exception e) {
             log.error("设置平台分布缓存失败，userId={}", userId, e);
-        }
-    }
-
-    /**
-     * 获取价格波动率缓存
-     */
-    public Object getVolatilityRanking(Long userId, Integer limit) {
-        String key = DASHBOARD_VOLATILITY_KEY + userId + ":" + limit;
-        try {
-            return redisTemplate.opsForValue().get(key);
-        } catch (Exception e) {
-            log.error("获取价格波动率缓存失败，userId={}, limit={}", userId, limit, e);
-            return null;
-        }
-    }
-
-    /**
-     * 设置价格波动率缓存
-     */
-    public void setVolatilityRanking(Long userId, Integer limit, Object data) {
-        String key = DASHBOARD_VOLATILITY_KEY + userId + ":" + limit;
-        try {
-            redisTemplate.opsForValue().set(key, data, CACHE_TTL_MINUTES, TimeUnit.MINUTES);
-            log.debug("设置价格波动率缓存，key={}, TTL={}分钟", key, CACHE_TTL_MINUTES);
-        } catch (Exception e) {
-            log.error("设置价格波动率缓存失败，userId={}, limit={}", userId, limit, e);
         }
     }
 
