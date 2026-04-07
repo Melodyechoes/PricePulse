@@ -1,5 +1,6 @@
 package com.pricepulse.backend.controller;
 
+import com.pricepulse.backend.common.dto.ChangePasswordRequest;
 import com.pricepulse.backend.common.dto.LoginRequest;
 import com.pricepulse.backend.common.dto.RegisterRequest;
 import com.pricepulse.backend.common.dto.UserInfo;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Map;
 
@@ -75,6 +77,30 @@ public class AuthController {
             return Result.success(userInfo);
         } catch (Exception e) {
             log.error("获取用户信息失败, userId: {}", userId, e);
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param request 修改密码请求，包含旧密码和新密码
+     * @param httpRequest HTTP请求对象，用于从JWT中提取userId
+     * @return 操作结果
+     */
+    @PutMapping("/change-password")
+    public Result<Void> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            HttpServletRequest httpRequest) {
+        try {
+            Long userId = (Long) httpRequest.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("未登录或Token无效");
+            }
+            authService.changePassword(userId, request.getOldPassword(), request.getNewPassword());
+            return Result.success();
+        } catch (Exception e) {
+            log.error("修改密码失败, userId: {}", httpRequest.getAttribute("userId"), e);
             return Result.error(e.getMessage());
         }
     }

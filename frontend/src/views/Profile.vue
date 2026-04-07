@@ -24,6 +24,7 @@
               <el-input v-model="userInfo.createdAt" disabled />
             </el-form-item>
             <el-form-item>
+              <el-button type="primary" @click="showChangePassword">修改密码</el-button>
               <el-button type="danger" @click="handleLogout">退出登录</el-button>
             </el-form-item>
           </el-form>
@@ -79,6 +80,24 @@
         </el-card>
       </el-col>
     </el-row>
+    <!-- 修改密码对话框 -->
+    <el-dialog v-model="passwordDialogVisible" title="修改密码" width="450px">
+      <el-form :model="passwordForm" label-width="100px" :rules="passwordRules" ref="passwordFormRef">
+        <el-form-item label="旧密码" prop="oldPassword">
+          <el-input v-model="passwordForm.oldPassword" type="password" show-password placeholder="请输入旧密码" />
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="passwordForm.newPassword" type="password" show-password placeholder="请输入新密码（至少 6 位）" />
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword">
+          <el-input v-model="passwordForm.confirmPassword" type="password" show-password placeholder="请再次输入新密码" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="passwordDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleChangePassword" :loading="passwordLoading">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
   </MainLayout>
 </template>
@@ -91,6 +110,7 @@ import { useUserStore } from '@/stores/user'
 import { getUserFollowedProducts, unfollowProduct as unfollowProductApi } from '@/api/products'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getCurrentUser } from '@/api/auth'
+import request from '@/utils/request'
 
 
 const router = useRouter()
@@ -287,6 +307,75 @@ const unfollowProduct = async (row) => {
     }
   }
 }
+const passwordDialogVisible = ref(false)
+const passwordLoading = ref(false)
+const passwordFormRef = ref(null)
+const passwordForm = ref({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+
+const validateConfirmPassword = (rule, value, callback) => {
+  if (value !== passwordForm.value.newPassword) {
+    callback(new Error('两次输入的密码不一致'))
+  } else {
+    callback()
+  }
+}
+
+const passwordRules = {
+  oldPassword: [{ required: true, message: '请输入旧密码', trigger: 'blur' }],
+  newPassword: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 6, message: '密码长度至少 6 位', trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, message: '请再次输入新密码', trigger: 'blur' },
+    { validator: validateConfirmPassword, trigger: 'blur' }
+  ]
+}
+
+const showChangePassword = () => {
+  passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' }
+  passwordDialogVisible.value = true
+}
+
+const handleChangePassword = async () => {
+  if (!passwordFormRef.value) return
+  await passwordFormRef.value.validate(async (valid) => {
+    if (!valid) return
+    
+    passwordLoading.value = true
+    try {
+      console.log('当前 userStore token:', userStore.token)
+      console.log('localStorage token:', localStorage.getItem('token'))
+      
+      const res = await request.put('/auth/change-password', {
+        oldPassword: passwordForm.value.oldPassword,
+        newPassword: passwordForm.value.newPassword
+      })
+      
+      if (res.code === 200) {
+        ElMessage.success('密码修改成功，请重新登录')
+        passwordDialogVisible.value = false
+        setTimeout(() => {
+          userStore.logout()
+          router.push('/login')
+        }, 1500)
+      } else {
+        ElMessage.error(res.message || '修改失败')
+      }
+    } catch (error) {
+      console.error('修改密码失败:', error)
+      const errorMsg = error.response?.data?.message || error.response?.data || '修改密码失败'
+      ElMessage.error(errorMsg)
+    } finally {
+      passwordLoading.value = false
+    }
+  })
+}
+
 const handleLogout = async () => {
   try {
     await ElMessageBox.confirm('确定要退出登录吗？', '提示', {

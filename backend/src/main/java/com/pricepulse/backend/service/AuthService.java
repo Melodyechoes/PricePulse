@@ -208,6 +208,37 @@ public class AuthService {
     }
 
     /**
+     * 修改密码
+     * <p>
+     * 1. 查询用户信息
+     * 2. 验证旧密码（BCrypt）
+     * 3. BCrypt加密新密码并更新
+     *
+     * @param userId 用户ID
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @throws BusinessException 当旧密码错误或用户不存在时抛出
+     */
+    @Transactional
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        // 验证旧密码
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new BusinessException("旧密码错误");
+        }
+
+        // 更新新密码
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        userMapper.updatePassword(user.getUsername(), encodedPassword);
+
+        log.info("用户修改密码成功, userId: {}", userId);
+    }
+
+    /**
      * 检查用户是否为管理员
      *
      * @param userId 用户ID

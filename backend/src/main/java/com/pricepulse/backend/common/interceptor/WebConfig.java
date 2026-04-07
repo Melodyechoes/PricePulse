@@ -38,13 +38,8 @@ public class WebConfig implements WebMvcConfigurer {
 
         // JWT 拦截器（新版，用于 Token 认证）
         registry.addInterceptor(jwtInterceptor)
-                .addPathPatterns("/api/protected/**", "/api/admin/**")  // 需要 Token 保护的路径
+                .addPathPatterns("/api/auth/change-password", "/api/admin/**")  // 需要 Token 保护的路径
                 .excludePathPatterns(
-                        "/api/auth/**",
-                        "/api/products/**",
-                        "/api/notifications/**",  // 排除通知接口
-                        "/api/dashboard/**",  // 新增：排除 Dashboard 接口
-                        "/api/admin/check-admin",  // 排除管理员权限检查接口（公开接口）
                         "/error"
                 );
     }
