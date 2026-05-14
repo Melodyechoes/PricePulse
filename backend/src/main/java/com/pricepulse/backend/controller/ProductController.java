@@ -49,6 +49,9 @@ public class ProductController {
     @Autowired
     private UserProductMapper userProductMapper;
 
+    @Autowired
+    private com.pricepulse.backend.service.AuthService authService;
+
     /**
      * 根据 URL 解析商品信息
      * <p>
@@ -260,11 +263,22 @@ public class ProductController {
     }
 
     /**
-     * 删除商品
+     * 删除商品（仅管理员可操作）
      */
     @DeleteMapping("/{id}")
-    public Result<Void> deleteProduct(@PathVariable Long id) {
+    public Result<Void> deleteProduct(@PathVariable Long id, jakarta.servlet.http.HttpServletRequest request) {
         try {
+            // 获取当前用户ID
+            Long userId = (Long) request.getAttribute("userId");
+            if (userId == null) {
+                return Result.error("未授权访问");
+            }
+
+            // 检查是否为管理员
+            if (!authService.isAdmin(userId)) {
+                return Result.error("无管理员权限，无法删除商品");
+            }
+
             productService.deleteProduct(id);
             return Result.success(); // 修复：使用无参的成功方法
         } catch (Exception e) {

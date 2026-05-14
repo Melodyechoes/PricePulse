@@ -148,6 +148,7 @@
                   关注
                 </el-button>
                 <el-button
+                    v-if="isAdmin"
                     type="danger"
                     size="small"
                     plain
@@ -190,10 +191,13 @@ import { Search, Plus } from '@element-plus/icons-vue'
 import { ref, onMounted, computed } from 'vue'
 import MainLayout from '@/components/layout/MainLayout.vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import { useProductsStore } from '@/stores/products'
 import { followProduct as followProductApi, unfollowProduct as unfollowProductApi, crawlProductPrice as crawlProductPriceApi, deleteProduct as deleteProductApi } from '@/api/products'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import AddProductDialog from '@/components/AddProductDialog.vue'
+
+const userStore = useUserStore()
 
 
 
@@ -209,8 +213,19 @@ const priceSort = ref('')
 const loading = ref(false)
 const showAddDialogFlag = ref(false)
 
+// 计算是否为管理员
+const isAdmin = computed(() => {
+  return userStore.userInfo && userStore.userInfo.role === 'ADMIN'
+})
+
 
 const confirmDelete = async (product) => {
+  // 检查是否为管理员
+  if (!isAdmin.value) {
+    ElMessage.error('只有管理员可以删除商品')
+    return
+  }
+
   try {
     await ElMessageBox.confirm(
         `确定要删除商品"${product.name}"吗？删除后无法恢复。`,
@@ -230,7 +245,7 @@ const confirmDelete = async (product) => {
   } catch (error) {
     if (error !== 'cancel') {
       console.error('删除失败:', error)
-      ElMessage.error('删除失败')
+      ElMessage.error(error.message || '删除失败')
     }
   }
 }

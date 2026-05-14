@@ -42,7 +42,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { ElMessageBox, ElNotification } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import { ArrowDown, Bell } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 import wsClient from '@/utils/websocket'
@@ -68,35 +68,12 @@ const loadUnreadCount = async () => {
   }
 }
 
-// WebSocket 消息处理函数
+// WebSocket 消息处理函数（仅更新未读数量，不显示弹窗）
 const handleWebSocketMessage = (event) => {
   console.log('收到 WebSocket 通知:', event.detail)
 
   // 更新未读数量
   loadUnreadCount()
-
-  const { type, message } = event.detail
-
-  // 根据不同类型的通知显示不同的图标和标题
-  let title = '📢 系统通知'
-  let icon = 'info'
-
-  if (type === 'PRICE_DROP') {
-    title = '💰 降价通知'
-    icon = 'success'
-  } else if (type === 'PRICE_ALERT') {
-    title = '🚨 价格异常提醒'
-    icon = 'warning'
-  }
-
-  // 显示 Element Plus 通知
-  ElNotification({
-    title: title,
-    message: message,
-    type: icon,
-    duration: 5000,
-    position: 'bottom-right'
-  })
 }
 // ✅ 在 await 之前注册 onUnmounted
 onUnmounted(() => {

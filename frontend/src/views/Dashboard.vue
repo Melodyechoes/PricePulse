@@ -51,14 +51,14 @@
         <el-col :span="16">
           <el-card class="stat-card trend-card">
             <div class="card-header">
-              <h3>📈 价格趋势</h3>
+              <h3> 价格趋势</h3>
               <div style="display: flex; gap: 10px; align-items: center;">
                 <el-select
                     v-model="selectedProductId"
                     placeholder="选择商品"
                     size="small"
                     @change="loadPriceTrend"
-                    style="width: 200px;"
+                    style="width: 180px;"
                     clearable
                 >
                   <el-option
@@ -82,24 +82,23 @@
           </el-card>
         </el-col>
 
-      </el-row>
-
-      <!-- 新增图表行 -->
-      <el-row :gutter="20" style="margin-top: 20px;">
-
-        <!-- 平台分布 -->
-        <el-col :span="12">
-          <el-card>
-            <template #header>
-              <span>🏪 平台分布</span>
-            </template>
-            <div v-loading="platformLoading" style="height: 300px;">
-              <v-chart v-if="platformOption" :option="platformOption" autoresize />
-            </div>
-          </el-card>
+        <!-- 右侧小图表区域 -->
+        <el-col :span="8">
+          <el-row :gutter="20">
+            <!-- 平台分布 -->
+            <el-col :span="24">
+              <el-card class="stat-card">
+                <template #header>
+                  <span>🏪 平台分布</span>
+                </template>
+                <div v-loading="platformLoading" class="chart-wrapper-small">
+                  <v-chart v-if="platformOption" :option="platformOption" autoresize />
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
         </el-col>
       </el-row>
-
 
       <!-- 管理员入口 -->
       <el-row :gutter="20" style="margin-top: 20px;" v-if="isAdmin">
@@ -140,7 +139,6 @@ import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart, PieChart, BarChart } from 'echarts/charts'
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from 'echarts/components'
 import VChart from 'vue-echarts'
-import * as echarts from 'echarts'
 import request from '@/utils/request'
 
 use([CanvasRenderer, LineChart, PieChart, BarChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent])
@@ -169,10 +167,6 @@ const trendOption = ref(null)
 const categoryLoading = ref(false)
 const categoryOption = ref(null)
 
-// 通知统计
-const notificationLoading = ref(false)
-const notificationOption = ref(null)
-
 // 平台分布
 const platformLoading = ref(false)
 const platformOption = ref(null)
@@ -182,7 +176,6 @@ onMounted(async () => {
   await loadStats()
   await loadFollowedProducts()
   await loadCategoryDistribution()
-  await loadNotificationStats()
   await loadPlatformDistribution()
 })
 
@@ -293,13 +286,24 @@ const loadPriceTrend = async () => {
 
       console.log('商品名称:', productName)
 
+      // 处理商品名称，如果过长则截断
+      const maxNameLength = 20
+      const displayName = productName.length > maxNameLength 
+        ? productName.substring(0, maxNameLength) + '...' 
+        : productName
+
       trendOption.value = {
         title: {
-          text: `${productName} 价格走势（近${daysToKeep}天）`,
+          text: `${displayName} 价格走势（近${daysToKeep}天）`,
           left: 'center',
+          top: 10,
           textStyle: {
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: 'bold'
+          },
+          tooltip: {
+            show: true,
+            formatter: productName
           }
         },
         tooltip: {
@@ -315,10 +319,10 @@ const loadPriceTrend = async () => {
           }
         },
         grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          top: '12%',
+          left: '50px',
+          right: '20px',
+          bottom: '50px',
+          top: '70px',
           containLabel: true
         },
         xAxis: {
@@ -340,6 +344,7 @@ const loadPriceTrend = async () => {
             formatter: '¥{value}',
             margin: 15
           },
+          scale: true,
           splitLine: {
             lineStyle: {
               color: '#e6e6e6',
@@ -470,73 +475,6 @@ const loadCategoryDistribution = async () => {
   }
 }
 
-
-// 加载通知统计
-const loadNotificationStats = async () => {
-  notificationLoading.value = true
-  try {
-    const userId = userStore.userInfo?.id || 1
-    const res = await request.get('/dashboard/notification-stats', {
-      params: { userId }
-    })
-
-    if (res.code === 200) {
-      const data = res.data
-      notificationOption.value = {
-        title: {
-          text: '通知接收统计',
-          left: 'center',
-          textStyle: {
-            fontSize: 16,
-            fontWeight: 'bold'
-          }
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          }
-        },
-        xAxis: {
-          type: 'category',
-          data: ['今日', '本周', '本月'],
-          axisLabel: {
-            interval: 0,
-            rotate: 0
-          }
-        },
-        yAxis: {
-          type: 'value',
-          name: '通知数量'
-        },
-        series: [{
-          data: [
-            data.todayCount || 0,
-            data.weekCount || 0,
-            data.monthCount || 0
-          ],
-          type: 'bar',
-          barWidth: '40%',
-          itemStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: '#83bff6' },
-              { offset: 0.5, color: '#188df0' },
-              { offset: 1, color: '#188df0' }
-            ])
-          },
-          label: {
-            show: true,
-            position: 'top'
-          }
-        }]
-      }
-    }
-  } catch (error) {
-    console.error('加载通知统计失败:', error)
-  } finally {
-    notificationLoading.value = false
-  }
-}
 
 // 加载平台分布
 const loadPlatformDistribution = async () => {
@@ -679,6 +617,11 @@ const loadPlatformDistribution = async () => {
 }
 
 .chart-wrapper {
-  height: 400px;
+  height: 350px;
+  width: 100%;
+}
+
+.chart-wrapper-small {
+  height: 350px;
 }
 </style>
